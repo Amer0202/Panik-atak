@@ -168,6 +168,7 @@ function tabloOlustur() {
   gunler.forEach((gun,col)=>{
     const td = document.createElement("td");
     td.innerText = puanlar.reduce((sum,row)=>sum+row[col],0);
+     td.innerHTML += ' <span style="font-size:0.6em;">💡</span>';
     toplamSatir.appendChild(td);
   });
 }
