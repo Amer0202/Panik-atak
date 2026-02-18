@@ -141,7 +141,11 @@ const belirtiler = [
 ];
 
 const gunler = ["Pzt","Sal","Çar","Per","Cum","Cmt","Paz"];
-let puanlar = Array(10).fill(null).map(()=>Array(7).fill(0));
+let puanlar = JSON.parse(localStorage.getItem("puanlar"));
+
+if (!puanlar) {
+  puanlar = Array(10).fill(null).map(() => Array(7).fill(0));
+}
 
 function tabloOlustur() {
   tbodyBelirtiler.innerHTML = "";
@@ -171,25 +175,35 @@ function tabloOlustur() {
 function puanTıkla(e) {
   const td = e.target;
   if(td.classList.contains("kilitli")) return;
-  const row = td.parentElement.rowIndex-1;
-  const col = td.cellIndex-1;
+
+  const row = td.parentElement.rowIndex - 1;
+  const col = td.cellIndex - 1;
+
   let puan = parseInt(td.innerText);
-  puan = (puan+1)%5;
+  puan = (puan + 1) % 5;
+
   td.innerText = puan;
   puanlar[row][col] = puan;
+
+  localStorage.setItem("puanlar", JSON.stringify(puanlar));
+
   toplamHesapla();
 }
-
 function toplamHesapla() {
   gunler.forEach((gun, i) => {
     let toplam = 0;
     tbodyBelirtiler.querySelectorAll("tr").forEach(tr => {
       toplam += parseInt(tr.children[i + 1].innerText);
     });
+
     const tdToplam = toplamSatir.children[i + 1];
     tdToplam.innerText = toplam;
+
+    // Temel stil
     tdToplam.style.background = "";
     tdToplam.style.color = "#e5e7eb";
+
+    // Renkli uyarılar
     if (toplam >= 0 && toplam <= 2) {
       tdToplam.style.background = "#22c55e";
       tdToplam.style.color = "#022c22";
