@@ -21,14 +21,16 @@ body {
 }
 
 #yazi {
+  order: 1;
   margin-bottom: 4vw;
-  font-size: 4vw;
+  font-size: clamp(14px, 4vw, 22px);
   font-weight: 500;
   opacity: 1;
   transition: opacity 1s ease-in-out;
 }
 
 #daire {
+  order: 2;
   width: 60vw;
   max-width: 250px;
   height: 60vw;
@@ -42,7 +44,7 @@ body {
   justify-content: center;
   color: #022c22;
   font-weight: bold;
-  font-size: 4vw;
+  font-size: clamp(14px, 4vw, 20px);
   transition: transform 4s ease-in-out;
 }
 
@@ -50,12 +52,13 @@ body {
 #daire.kucul { transform: scale(1); }
 
 button {
+  order: 3;
   margin: 2vw 1vw;
   padding: 2vw 4vw;
   border-radius: 1vw;
   border: none;
   cursor: pointer;
-  font-size: 3vw;
+  font-size: clamp(14px, 3vw, 18px);
   transition: all 0.2s ease;
   background: #334155;
   color: #e5e7eb;
