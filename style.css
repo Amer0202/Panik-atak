@@ -80,3 +80,16 @@ td.kilitli { background: #334155; color:#9ca3af; cursor: default; }
   button { font-size: 4vw; padding: 3vw 5vw; }
   td, th { font-size: 4vw; padding: 3vw; }
 }
+/* Toplam satırındaki hücreler tıklanabilir görünür */
+#toplamSatir td {
+  cursor: pointer;        /* Tıklanabilir imleç */
+  font-weight: bold;      /* Daha belirgin */
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+/* Hover efekti (masaüstü için) */
+#toplamSatir td:hover {
+  transform: scale(1.05); /* Hafif büyüme */
+  background: #334155;    /* Hover rengi */
+  color: #fff;
+}
