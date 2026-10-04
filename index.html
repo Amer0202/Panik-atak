@@ -12,105 +12,48 @@
 <link rel="icon" href="icon-192.png" />
 <link rel="apple-touch-icon" href="icon-192.png" />
 <style>
-  :root {
-    --bg: #070b14;
-    --ink: #e7eef8;
-    --muted: #8ea0b8;
-    --line: rgba(255,255,255,.08);
-    --good: #7dcea0;
-    --mid: #e6c27a;
-    --bad: #e07a7a;
-  }
-  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    min-height: 100dvh;
-    background:
-      radial-gradient(900px 520px at 50% -10%, rgba(90,120,180,.18), transparent 60%),
-      var(--bg);
-  }
-  .app { max-width: 480px; margin: 0 auto; padding: 18px 18px 28px; }
-  header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-  .brand { font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
-  .sound {
-    border: 1px solid var(--line); background: rgba(255,255,255,.03);
-    color: var(--ink); border-radius: 999px; padding: 7px 12px; font-size: 13px;
-  }
-  h1 { font-size: 28px; font-weight: 560; letter-spacing: -.03em; margin: 10px 0 6px; }
-  .lead { color: var(--muted); font-size: 15px; line-height: 1.45; margin: 0 0 8px; }
-  .stage {
-    position: relative; height: 340px; display: grid; place-items: center; margin: 6px 0 4px;
-  }
-  .halo, .orb, .core {
-    position: absolute; border-radius: 50%;
-    transform: scale(var(--s, .72));
-    transition: transform 4s linear, opacity 1.2s ease, filter 1.2s ease;
-  }
-  .halo {
-    width: 280px; height: 280px;
-    background: radial-gradient(circle, rgba(126,168,214,.16), transparent 68%);
-    filter: blur(8px); opacity: .7;
-  }
-  .orb {
-    width: 210px; height: 210px;
-    background:
-      radial-gradient(circle at 38% 32%, rgba(255,255,255,.22), transparent 28%),
-      radial-gradient(circle at 50% 58%, rgba(143,186,214,.55), rgba(46,78,120,.18) 62%, transparent 74%);
-    box-shadow: 0 0 60px rgba(120,170,210,.18);
-    opacity: .9;
-  }
-  .core {
-    width: 132px; height: 132px;
-    background: radial-gradient(circle at 40% 35%, #f4f7fb, #b9cfe4 42%, #6f93b4 78%);
-    box-shadow: inset 0 -18px 30px rgba(40,70,110,.25), 0 10px 40px rgba(0,0,0,.25);
-  }
-  body.inhale { --s: 1; }
-  body.hold { --s: 1; }
-  body.exhale { --s: .72; }
-  body.hold .orb { filter: saturate(1.05); }
-  body.exhale .halo { transition-duration: 8s; }
-  body.exhale .orb { transition-duration: 8s; }
-  body.exhale .core { transition-duration: 8s; }
-  body.inhale .halo, body.inhale .orb, body.inhale .core { transition-duration: 4s; }
-  .phase {
-    position: relative; z-index: 2; text-align: center; pointer-events: none;
-  }
-  .phase b { display: block; font-size: 22px; font-weight: 560; letter-spacing: -.02em; }
-  .phase span { color: var(--muted); font-size: 13px; }
-  .count {
-    margin-top: 6px; font-variant-numeric: tabular-nums; font-size: 28px; font-weight: 520;
-  }
-  .go, .soft, .ghost {
-    width: 100%; border: 0; border-radius: 16px; padding: 16px 18px;
-    font-size: 17px; font-weight: 600;
-  }
-  .go { background: #e7eef8; color: #101722; }
-  .soft { background: rgba(255,255,255,.06); color: var(--ink); margin-top: 10px; }
-  .ghost { background: transparent; color: var(--muted); margin-top: 8px; }
-  .row { display: flex; gap: 8px; }
-  .row > * { flex: 1; }
-  .card {
-    margin-top: 18px; padding: 14px; border: 1px solid var(--line);
-    border-radius: 18px; background: rgba(255,255,255,.025);
-  }
-  .card h2 { margin: 0 0 8px; font-size: 15px; font-weight: 600; }
-  label { display: block; font-size: 13px; color: var(--muted); margin: 10px 0 6px; }
-  input, select, textarea {
-    width: 100%; border: 1px solid var(--line); background: #0c121c; color: var(--ink);
-    border-radius: 12px; padding: 12px; font-size: 16px; font-family: inherit;
-  }
-  textarea { min-height: 72px; resize: vertical; }
-  table { width: 100%; border-collapse: collapse; font-size: 12px; }
-  th, td { border-bottom: 1px solid var(--line); padding: 7px 2px; text-align: center; }
-  th:first-child, td:first-child { text-align: left; color: var(--muted); }
-  td.hit { cursor: pointer; font-variant-numeric: tabular-nums; }
-  .n0 { color: #66788c; } .n1 { color: var(--good); } .n2 { color: #b7d7a8; }
-  .n3 { color: var(--mid); } .n4 { color: var(--bad); }
-  .bars { display: flex; align-items: flex-end; gap: 8px; height: 92px; margin-top: 8px; }
-  .bars div { flex: 1; background: linear-gradient(#9eb6cf, #3d5874); border-radius: 8px 8px 3px 3px; min-height: 4px; }
-  .note { color: var(--muted); font-size: 12px; line-height: 1.45; margin-top: 14px; }
-  .hidden { display: none; }
+  :root { --bg:#070b14; --ink:#e7eef8; --muted:#8ea0b8; --line:rgba(255,255,255,.08); }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html, body { margin:0; background:var(--bg); color:var(--ink); }
+  body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; min-height:100dvh;
+    background:radial-gradient(900px 520px at 50% -10%, rgba(90,120,180,.18), transparent 60%), var(--bg); }
+  .app { max-width:520px; margin:0 auto; padding:18px 16px 32px; }
+  header { display:flex; justify-content:space-between; align-items:center; }
+  .brand { font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); }
+  .sound { border:1px solid var(--line); background:rgba(255,255,255,.03); color:var(--ink); border-radius:999px; padding:7px 12px; font-size:13px; }
+  h1 { font-size:26px; font-weight:560; letter-spacing:-.03em; margin:12px 0 6px; }
+  .lead { color:var(--muted); font-size:15px; line-height:1.45; margin:0 0 4px; }
+  .stage { position:relative; height:320px; display:grid; place-items:center; }
+  .halo,.orb,.core { position:absolute; border-radius:50%; transform:scale(var(--s,.72)); transition:transform 4s linear; }
+  .halo { width:280px; height:280px; background:radial-gradient(circle, rgba(126,168,214,.16), transparent 68%); filter:blur(8px); }
+  .orb { width:210px; height:210px; background:radial-gradient(circle at 38% 32%, rgba(255,255,255,.22), transparent 28%), radial-gradient(circle at 50% 58%, rgba(143,186,214,.55), rgba(46,78,120,.18) 62%, transparent 74%); box-shadow:0 0 60px rgba(120,170,210,.18); }
+  .core { width:132px; height:132px; background:radial-gradient(circle at 40% 35%, #f4f7fb, #b9cfe4 42%, #6f93b4 78%); }
+  body.inhale { --s:1; } body.hold { --s:1; } body.exhale { --s:.72; }
+  body.exhale .halo, body.exhale .orb, body.exhale .core { transition-duration:8s; }
+  body.inhale .halo, body.inhale .orb, body.inhale .core { transition-duration:4s; }
+  .phase { position:relative; z-index:2; text-align:center; width:min(240px,70vw); pointer-events:none; }
+  .phase b { display:block; font-size:20px; font-weight:560; }
+  .phase span { display:block; margin-top:6px; color:#d5e2f0; font-size:14px; line-height:1.35; min-height:38px; }
+  .count { margin-top:4px; font-variant-numeric:tabular-nums; font-size:26px; }
+  .go,.soft,.ghost { width:100%; border:0; border-radius:16px; padding:16px 18px; font-size:17px; font-weight:600; }
+  .go { background:#e7eef8; color:#101722; } .soft { background:rgba(255,255,255,.06); color:var(--ink); } .ghost { background:transparent; color:var(--muted); }
+  .row { display:flex; gap:8px; margin-top:10px; } .row > * { flex:1; }
+  .card { margin-top:16px; padding:14px; border:1px solid var(--line); border-radius:18px; background:rgba(255,255,255,.025); }
+  .card h2 { margin:0 0 8px; font-size:15px; }
+  label { display:block; font-size:13px; color:var(--muted); margin:10px 0 6px; }
+  input,select,textarea { width:100%; border:1px solid var(--line); background:#0c121c; color:var(--ink); border-radius:12px; padding:12px; font-size:16px; font-family:inherit; }
+  textarea { min-height:72px; }
+  .wrap { overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; font-size:12px; }
+  th,td { border-bottom:1px solid var(--line); padding:8px 4px; text-align:center; }
+  th:first-child, td:first-child { text-align:left; color:var(--muted); min-width:148px; }
+  td.hit { font-variant-numeric:tabular-nums; }
+  .sum { border-radius:8px; font-weight:700; cursor:pointer; }
+  .note { color:var(--muted); font-size:12px; line-height:1.45; margin-top:12px; }
+  .hidden { display:none; }
+  .modal { position:fixed; inset:0; background:rgba(0,0,0,.55); display:grid; place-items:end center; padding:16px; }
+  .sheet { width:min(440px,100%); background:#121a27; border-radius:18px; padding:16px; }
+  .sheet p { line-height:1.45; margin:0 0 12px; }
 </style>
 </head>
 <body>
@@ -120,111 +63,101 @@
       <button class="sound" id="soundBtn" type="button">Ses kapalı</button>
     </header>
     <h1>Atak gelince burası yeterli.</h1>
-    <p class="lead">Konuşma yok. Sadece yavaş bir ışık ve alçak bir zemin sesi. Ritme uy, bitince not düş.</p>
-
-    <div class="stage" id="stage">
-      <div class="halo"></div>
-      <div class="orb"></div>
-      <div class="core"></div>
+    <p class="lead">Küre ritmi gösterir. Cümleler senin yazdıkların. Ses sadece zemin, konuşma yok.</p>
+    <div class="stage">
+      <div class="halo"></div><div class="orb"></div><div class="core"></div>
       <div class="phase">
-        <b id="phaseLabel">Hazır</b>
-        <span id="phaseHint">İstediğin anda başla</span>
+        <b id="phaseLabel">Hazır mısın?</b>
+        <span id="phaseHint">Kontrol sende.</span>
         <div class="count" id="count"></div>
       </div>
     </div>
-
-    <button class="go" id="startBtn" type="button">Başlıyorum</button>
+    <button class="go" id="startBtn" type="button">Kontrol sende</button>
     <div class="row hidden" id="liveRow">
-      <button class="soft" id="doneBtn" type="button">Geçti</button>
+      <button class="soft" id="doneBtn" type="button">Rahatladım</button>
       <button class="ghost" id="stopBtn" type="button">Durdur</button>
     </div>
-
     <section class="card hidden" id="after">
-      <h2>Bitti. Bunu atlattın.</h2>
+      <h2 id="afterTitle">Geçti. Bunu başardın.</h2>
       <label>Şiddet</label>
-      <select id="severity">
-        <option value="1">Hafif</option>
-        <option value="2" selected>Orta</option>
-        <option value="3">Sert</option>
-      </select>
+      <select id="severity"><option value="1">Hafif</option><option value="2" selected>Orta</option><option value="3">Sert</option></select>
       <label>Ne tetiklemiş olabilir</label>
       <input id="trigger" placeholder="kalabalık, haber, boşluk..." />
-      <label>Kısa not</label>
-      <textarea id="journal" placeholder="istersen bir cümle"></textarea>
       <button class="go" id="saveBtn" type="button" style="margin-top:12px">Kaydet</button>
     </section>
-
     <section class="card">
-      <h2>Bu hafta</h2>
-      <div class="bars" id="bars"></div>
-      <div class="note" id="weekNote"></div>
+      <h2>Kaygı takibi</h2>
+      <div class="wrap"><table id="grid"></table></div>
+      <p class="note">Hücreye bas, 0’dan 4’e çıkar. Gün toplamına basınca o güne göre kısa tavsiye açılır. Eski puanların duruyorsa onları da okur.</p>
     </section>
-
-    <section class="card">
-      <h2>Belirti tablosu</h2>
-      <div style="overflow-x:auto">
-        <table id="grid"></table>
-      </div>
-      <p class="note">Hücreye bas: 0’dan 4’e çıkar. Sadece bu telefonda durur.</p>
-    </section>
-
-    <section class="card">
-      <h2>Destek</h2>
-      <p class="lead" style="margin:0">İstersen bir bağış linki koy. Boşsa bu kutu gizlenir.</p>
-      <input id="donate" placeholder="https://..." style="margin-top:8px" />
-      <a class="soft" id="donateGo" style="display:none;text-align:center;text-decoration:none;margin-top:10px" href="#" target="_blank" rel="noopener">Destek ol</a>
-    </section>
-    <p class="note">Bu bir nefes ve not aracıdır. Tedavi, teşhis veya acil yardım yerine geçmez. Tehlike hissedersen 112.</p>
+    <p class="note">Bu bir nefes ve not aracıdır. Tedavi veya acil yardım yerine geçmez. Tehlike hissedersen 112.</p>
   </div>
+  <div class="modal hidden" id="modal"><div class="sheet"><p id="modalText"></p><button class="go" id="modalClose" type="button">Kapat</button></div></div>
 <script>
-const SYMPTOMS = ["Çarpıntı","Terleme","Nefes","Boğulma","Göğüs","Mide","Baş dönmesi","Derealizasyon","Uyuşma","Korku"];
+const SYMPTOMS = ["Kalbin teklemesi, hızlanması veya çarpıntı","Terleme, ürperme veya kızarma","Titreşim veya sarsılma","Nefes daralması, nefes almakta zorlanma","Boğulacakmış gibi hissetme","Göğüste ağrı veya daralma","Karnında kelebekler, mide bulantısı veya huzursuz mide","Baş dönmesi, sersemlik hali, denge yitimi","Kendini veya dünyayı gerçek değilmiş gibi hissetmek","Uyuşma ve karıncalanma"];
 const DAYS = ["Pzt","Sal","Çar","Per","Cum","Cmt","Paz"];
-const KEY = "kaygi-v3";
-const state = load();
-let running = false, timer = null, audioOn = false, audio = null;
-
-function load() {
-  try { return JSON.parse(localStorage.getItem(KEY)) || {}; }
-  catch { return {}; }
+const LINES = {
+  al: ["Burnundan al… vücudun seni koruyor.","Yavaşça nefes al… güvendesin.","Hava içeri giriyor, bedenin rahatlıyor.","Nefes al… enerji doluyor.","Derin nefes… zihnin sakinleşiyor.","İçeri çek, her şey yolunda.","Dikkatini nefesine ver, güven içindesin.","Bedenin uyarıyor, sen kontrolündesin.","Nefes al… her şey geçici.","İçeri çek, panik küçülüyor.","Her nefes seni güçlendiriyor.","Vücudun ritmini buluyor, sen de sakinleşiyorsun.","Derin nefes… bedenin uyanıyor.","Kontrol sende, panik dalgası geçiyor.","Hava doluyor, stres azalıyor."],
+  tut: ["Her şey yolunda.","Bu his geçici.","Kontrol sende, beden dengede.","Nefesini tut… sabırlı ol.","Dur, hisset ve sakinleş.","Bedenin rahat, zihin huzurlu.","Bir an dur… hislerini izle.","Panik geçiyor, sen güçlüsün.","Sakin ol… nefesini hisset.","Dikkatini topla, beden dengede.","Zihnini gözlemle, her şey normal.","Durakla… kontrol sende.","Sabırlı ol… dalgalar geçici.","Bedenin sana güven veriyor.","Hisset ve kabul et, panik azalıyor."],
+  ver: ["Ağzından ver… yük azalıyor.","Nefesi bırak… kalbin sakinleşiyor.","Bırak gitsin… dalga sönüyor.","Nefes ver… gevşe ve rahatla.","Dışarı bırak, huzuru hisset.","Bırak gitsin… tüm stres uzaklaşıyor.","Panik dağılıyor, sen güçlüsün.","Stres akıyor, beden hafifliyor.","Rahatla… her nefesle sakinleş.","Yavaşça ver… kontrol sende.","Her nefesle huzur artıyor.","Bırak, bırak… kaygı azalıyor.","Stres uzaklaşıyor, sen güven içindesin.","Nefesini bırak, panik küçülüyor.","Huzur dol… her nefesle gevşe."]
+};
+const KEY = "kaygi-v4";
+let state = {};
+try { state = JSON.parse(localStorage.getItem(KEY)) || {}; } catch { state = {}; }
+if (!state.grid) {
+  let old = null;
+  try { old = JSON.parse(localStorage.getItem("puanlar")); } catch {}
+  state.grid = Array.isArray(old) && old.length === 10 ? old : SYMPTOMS.map(() => Array(7).fill(0));
 }
-function save() { localStorage.setItem(KEY, JSON.stringify(state)); }
-function weekKey(d = new Date()) {
-  const t = new Date(d); const day = (t.getDay() + 6) % 7;
-  t.setDate(t.getDate() - day); t.setHours(0,0,0,0);
-  return t.toISOString().slice(0,10);
+function persist() { localStorage.setItem(KEY, JSON.stringify(state)); localStorage.setItem("puanlar", JSON.stringify(state.grid)); }
+function advice(total) {
+  if (total <= 2) return "Harika! Çok az kaygı belirtisi. Ev içinde kısa yürüyüş yapabilirsin, nefes egzersizine devam et.";
+  if (total <= 6) return "Birkaç kaygı belirtisi gözlemledin. Nefes egzersizine devam et ve sakin aktiviteler yap.";
+  if (total <= 10) return "Hafif düzeyde fiziksel kaygı var. Kısa indoor walking önerilir. Derin nefes ve farkındalık egzersizleri yap.";
+  if (total <= 20) return "Orta düzeyde kaygı. Bedenini dinle, nefes egzersizleri ve hafif ev içi egzersizler yap. Kaygı normal, panik geçici.";
+  if (total <= 30) return "Şiddetli fiziksel kaygı. Yavaşça otur, derin nefes al-ver yap. Ev içi hareketlerle rahatlamayı dene. Her şey geçici, kalbin sağlam çalışıyor.";
+  return "Aşırı kaygı! Hemen kendine zaman ayır, sakin bir ortamda dinlen. Nefes ve farkındalık egzersizleri yap. Tekrar güvenli olduğunu hatırla.";
 }
-function ensureWeek() {
-  const k = weekKey();
-  if (!state.weeks) state.weeks = {};
-  if (!state.weeks[k]) state.weeks[k] = SYMPTOMS.map(() => Array(7).fill(0));
-  state.week = k;
-  if (!state.crises) state.crises = [];
-  return state.weeks[k];
+function color(total) {
+  if (total <= 2) return ["#22c55e","#022c22"];
+  if (total <= 6) return ["#a3e635","#022c22"];
+  if (total <= 10) return ["#facc15","#022c22"];
+  if (total <= 20) return ["#f97316","#fff"];
+  if (total <= 30) return ["#ef4444","#fff"];
+  return ["#b91c1c","#fff"];
 }
-
 function renderGrid() {
-  const grid = ensureWeek();
-  let html = "<tr><th></th>" + DAYS.map(d => `<th>${d}</th>`).join("") + "<th></th></tr>";
+  const totals = DAYS.map((_, c) => state.grid.reduce((a,row) => a + row[c], 0));
+  let html = "<tr><th>Belirti</th>" + DAYS.map(d => `<th>${d}</th>`).join("") + "</tr>";
   SYMPTOMS.forEach((name, r) => {
-    const sum = grid[r].reduce((a,b) => a+b, 0);
-    html += `<tr><td>${name}</td>` + grid[r].map((n,c) => `<td class="hit n${n}" data-r="${r}" data-c="${c}">${n}</td>`).join("") + `<td>${sum}</td></tr>`;
+    html += `<tr><td>${name}</td>` + state.grid[r].map((n,c) => `<td class="hit" data-r="${r}" data-c="${c}">${n}</td>`).join("") + "</tr>";
   });
+  html += "<tr><td>Toplam</td>" + totals.map((n,c) => {
+    const [bg,fg] = color(n);
+    return `<td class="sum" data-day="${c}" style="background:${bg};color:${fg}">${n}</td>`;
+  }).join("") + "</tr>";
   document.getElementById("grid").innerHTML = html;
-  const days = DAYS.map((_, c) => grid.reduce((a, row) => a + row[c], 0));
-  const max = Math.max(4, ...days);
-  document.getElementById("bars").innerHTML = days.map(n => `<div style="height:${Math.max(6, (n/max)*92)}px" title="${n}"></div>`).join("");
-  const total = days.reduce((a,b) => a+b, 0);
-  document.getElementById("weekNote").textContent = total === 0 ? "Bu hafta henüz işaret yok." : `Haftalık toplam ${total}. Yüksek günler dalganın kendisi, başarısızlık değil.`;
 }
 document.getElementById("grid").onclick = (e) => {
   const cell = e.target.closest("[data-r]");
-  if (!cell) return;
-  const grid = ensureWeek();
-  const r = +cell.dataset.r, c = +cell.dataset.c;
-  grid[r][c] = (grid[r][c] + 1) % 5;
-  save(); renderGrid();
+  const day = e.target.closest("[data-day]");
+  if (cell) {
+    const r = +cell.dataset.r, c = +cell.dataset.c;
+    state.grid[r][c] = (state.grid[r][c] + 1) % 5;
+    persist(); renderGrid();
+  } else if (day) {
+    const total = state.grid.reduce((a,row) => a + row[+day.dataset.day], 0);
+    document.getElementById("modalText").textContent = advice(total);
+    document.getElementById("modal").classList.remove("hidden");
+  }
 };
-
+document.getElementById("modalClose").onclick = () => document.getElementById("modal").classList.add("hidden");
+let running = false, timer = null, audioOn = false, audio = null, last = {al:"",tut:"",ver:""};
+function pick(kind) {
+  let line = last[kind];
+  while (line === last[kind]) line = LINES[kind][Math.floor(Math.random()*LINES[kind].length)];
+  last[kind] = line; return line;
+}
 function setPhase(name, hint, n, cls) {
   document.body.classList.remove("inhale","hold","exhale");
   if (cls) document.body.classList.add(cls);
@@ -232,7 +165,6 @@ function setPhase(name, hint, n, cls) {
   document.getElementById("phaseHint").textContent = hint;
   document.getElementById("count").textContent = n || "";
 }
-
 class Calm {
   constructor() {
     const AC = window.AudioContext || window.webkitAudioContext;
@@ -240,98 +172,41 @@ class Calm {
     this.master = this.ctx.createGain();
     this.master.gain.value = 0.0001;
     this.master.connect(this.ctx.destination);
-    this.nodes = [];
-    const bed = [
-      [110, .045], [164.81, .03], [220, .02], [329.63, .012]
-    ];
-    bed.forEach(([f, g], i) => {
-      const o = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-      const filter = this.ctx.createBiquadFilter();
-      o.type = i === 3 ? "triangle" : "sine";
-      o.frequency.value = f;
-      filter.type = "lowpass";
-      filter.frequency.value = 680;
-      gain.gain.value = g;
-      o.connect(filter); filter.connect(gain); gain.connect(this.master);
-      o.start();
-      this.nodes.push(o);
-      this.lfo(gain.gain, g, .35 + i * .2, 0.004);
+    [[110,.045],[164.81,.03],[220,.02],[329.63,.012]].forEach(([f,g],i) => {
+      const o = this.ctx.createOscillator(), gain = this.ctx.createGain(), filter = this.ctx.createBiquadFilter();
+      o.type = i === 3 ? "triangle" : "sine"; o.frequency.value = f; filter.type = "lowpass"; filter.frequency.value = 680; gain.gain.value = g;
+      o.connect(filter); filter.connect(gain); gain.connect(this.master); o.start();
     });
     const noise = this.ctx.createBufferSource();
     const buffer = this.ctx.createBuffer(1, this.ctx.sampleRate * 3, this.ctx.sampleRate);
-    const data = buffer.getChannelData(0);
-    let last = 0;
-    for (let i = 0; i < data.length; i++) {
-      const white = Math.random() * 2 - 1;
-      last = (last + 0.02 * white) / 1.02;
-      data[i] = last * 3.2;
-    }
+    const data = buffer.getChannelData(0); let prev = 0;
+    for (let i = 0; i < data.length; i++) { const w = Math.random()*2-1; prev = (prev + 0.02*w)/1.02; data[i] = prev*3.2; }
     noise.buffer = buffer; noise.loop = true;
-    const ng = this.ctx.createGain();
-    const nf = this.ctx.createBiquadFilter();
-    nf.type = "lowpass"; nf.frequency.value = 420;
-    ng.gain.value = 0.035;
-    noise.connect(nf); nf.connect(ng); ng.connect(this.master);
-    noise.start();
-    this.air = ng;
-    this.nodes.push(noise);
+    const ng = this.ctx.createGain(), nf = this.ctx.createBiquadFilter();
+    nf.type = "lowpass"; nf.frequency.value = 420; ng.gain.value = 0.035;
+    noise.connect(nf); nf.connect(ng); ng.connect(this.master); noise.start(); this.air = ng;
   }
-  lfo(param, base, speed, depth) {
-    const o = this.ctx.createOscillator();
-    const g = this.ctx.createGain();
-    o.frequency.value = speed; g.gain.value = depth;
-    o.connect(g); g.connect(param); o.start();
-    param.value = base;
-  }
-  async fade(v) {
-    if (this.ctx.state === "suspended") await this.ctx.resume();
-    const now = this.ctx.currentTime;
-    this.master.gain.cancelScheduledValues(now);
-    this.master.gain.setValueAtTime(this.master.gain.value, now);
-    this.master.gain.linearRampToValueAtTime(v, now + 1.4);
-  }
-  breath(kind) {
-    const now = this.ctx.currentTime;
-    this.air.gain.cancelScheduledValues(now);
-    this.air.gain.setValueAtTime(this.air.gain.value, now);
-    const target = kind === "in" ? 0.07 : kind === "out" ? 0.02 : 0.04;
-    this.air.gain.linearRampToValueAtTime(target, now + (kind === "out" ? 7.5 : 3.6));
-  }
-  stop() { this.fade(0.0001); }
+  async fade(v) { if (this.ctx.state === "suspended") await this.ctx.resume(); const now = this.ctx.currentTime; this.master.gain.cancelScheduledValues(now); this.master.gain.setValueAtTime(this.master.gain.value, now); this.master.gain.linearRampToValueAtTime(v, now+1.4); }
+  breath(kind) { const now = this.ctx.currentTime; this.air.gain.cancelScheduledValues(now); this.air.gain.setValueAtTime(this.air.gain.value, now); this.air.gain.linearRampToValueAtTime(kind==="in"?0.07:kind==="out"?0.02:0.04, now+(kind==="out"?7.5:3.6)); }
 }
-
-async function ensureAudio() {
-  if (!audio) audio = new Calm();
-  if (audio.ctx.state === "suspended") await audio.ctx.resume();
-}
-
+async function ensureAudio() { if (!audio) audio = new Calm(); if (audio.ctx.state === "suspended") await audio.ctx.resume(); }
 document.getElementById("soundBtn").onclick = async () => {
   audioOn = !audioOn;
   document.getElementById("soundBtn").textContent = audioOn ? "Ses açık" : "Ses kapalı";
-  if (audioOn) { await ensureAudio(); audio.fade(running ? 0.22 : 0.08); }
-  else if (audio) audio.stop();
+  if (audioOn) { await ensureAudio(); audio.fade(running ? 0.22 : 0.08); } else if (audio) audio.fade(0.0001);
 };
-
 function wait(ms) { return new Promise(r => timer = setTimeout(r, ms)); }
 async function cycle() {
-  const steps = [
-    ["Al", "burundan, acele etme", 4, "inhale", "in"],
-    ["Tut", "zorlama, sadece kal", 4, "hold", "hold"],
-    ["Ver", "ağızdan, uzun bırak", 8, "exhale", "out"]
-  ];
+  const steps = [["Burnundan nefes al","al",4,"inhale","in"],["Nefesini tut","tut",4,"hold","hold"],["Ağzından yavaşça ver","ver",8,"exhale","out"]];
   while (running) {
-    for (const [name, hint, sec, cls, kind] of steps) {
+    for (const [name, kind, sec, cls, breath] of steps) {
       if (!running) return;
-      if (audioOn && audio) audio.breath(kind);
-      for (let n = sec; n >= 1 && running; n--) {
-        setPhase(name, hint, n, cls);
-        await wait(1000);
-      }
+      if (audioOn && audio) audio.breath(breath);
+      const line = pick(kind);
+      for (let n = sec; n >= 1 && running; n--) { setPhase(name, line, n, cls); await wait(1000); }
     }
   }
 }
-
 document.getElementById("startBtn").onclick = async () => {
   if (audioOn) { await ensureAudio(); audio.fade(0.22); }
   running = true;
@@ -340,42 +215,20 @@ document.getElementById("startBtn").onclick = async () => {
   document.getElementById("after").classList.add("hidden");
   cycle();
 };
-function halt(showAfter) {
+function halt(done) {
   running = false; clearTimeout(timer);
-  setPhase("Hazır", "İstediğin anda başla", "", "");
+  const end = ["Sakinledik…","Her zamanki gibi geçti…","Zararsız bir şekilde geçti…"];
+  setPhase(done ? end[Math.floor(Math.random()*end.length)] : "Hazır mısın?", done ? "Geçti. Bunu başardın." : "Kontrol sende.", "", "");
   document.getElementById("startBtn").classList.remove("hidden");
   document.getElementById("liveRow").classList.add("hidden");
   if (audio && audioOn) audio.fade(0.05);
-  if (showAfter) document.getElementById("after").classList.remove("hidden");
+  if (done) document.getElementById("after").classList.remove("hidden");
 }
 document.getElementById("stopBtn").onclick = () => halt(false);
 document.getElementById("doneBtn").onclick = () => halt(true);
-document.getElementById("saveBtn").onclick = () => {
-  state.crises.push({
-    t: Date.now(),
-    severity: document.getElementById("severity").value,
-    trigger: document.getElementById("trigger").value.trim(),
-    note: document.getElementById("journal").value.trim()
-  });
-  save();
-  document.getElementById("after").classList.add("hidden");
-  document.getElementById("trigger").value = "";
-  document.getElementById("journal").value = "";
-};
-document.getElementById("donate").oninput = (e) => {
-  const url = e.target.value.trim();
-  state.donate = url; save();
-  const a = document.getElementById("donateGo");
-  a.style.display = url ? "block" : "none";
-  a.href = url || "#";
-};
-if (state.donate) {
-  document.getElementById("donate").value = state.donate;
-  document.getElementById("donateGo").style.display = "block";
-  document.getElementById("donateGo").href = state.donate;
-}
+document.getElementById("saveBtn").onclick = () => { document.getElementById("after").classList.add("hidden"); document.getElementById("trigger").value = ""; };
 renderGrid();
-if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
 </body>
 </html>
