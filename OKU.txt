@@ -1,0 +1,22 @@
+# Kaygı App
+
+Panik anında 4-4-8 nefes ritmi, sesli yönlendirme ve kaygı takibi. Tedavi değildir.
+
+## GitHub Pages (mevcut linkin kalsın)
+
+1. GitHub'da `amer0202/Panik-atak` reposunu aç.
+2. Bu klasördeki dosyaları yükle: `index.html`, `manifest.json`, `sw.js`, `icon-192.png`, `icon-512.png`.
+3. Eski `script.js` durabilir, yeni sayfa onu çağırmaz.
+4. Birkaç dakika sonra link aynı kalır: https://amer0202.github.io/Panik-atak/
+
+Telefonda Chrome menüsünden "Ana ekrana ekle" dersen uygulama gibi açılır.
+
+## APK
+
+Evet, sonra APK yapılabilir. Önce sayfa GitHub Pages'te yayında olmalı.
+
+1. https://www.pwabuilder.com adresine GitHub Pages linkini yapıştır.
+2. Android paketini indir. Bu bir APK / AAB üretir.
+3. Google Play'e yüklemek için Play Console hesabı gerekir (tek seferlik 25 dolar). Test için APK'yı telefona elle kurabilirsin; bilinmeyen kaynaklara izin vermen gerekir.
+
+Abonelik ve mağaza içi satış, Play Console tarafında açılır. Bu pakette sadece senin yapıştırdığın bağış linki var.

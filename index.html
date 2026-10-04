@@ -1,63 +1,390 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kaygı App</title>
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#22c55e">
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#0c1222" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<title>Kaygı App</title>
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" href="icon-192.png" />
+<link rel="apple-touch-icon" href="icon-192.png" />
+<style>
+  :root {
+    --bg: #0c1222;
+    --card: #141c2f;
+    --line: #243049;
+    --text: #e8eefc;
+    --muted: #93a0bd;
+    --mint: #5eead4;
+    --mint-dim: #134e4a;
+    --danger: #fb7185;
+    --warn: #fbbf24;
+    --ok: #4ade80;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); font-family: "Segoe UI", system-ui, sans-serif; }
+  body { min-height: 100dvh; }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  .app { max-width: 480px; margin: 0 auto; min-height: 100dvh; padding: 18px 16px 28px; display: flex; flex-direction: column; }
+  .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .brand { font-weight: 700; letter-spacing: .02em; }
+  .brand span { color: var(--mint); }
+  .ghost { background: transparent; border: 1px solid var(--line); color: var(--muted); border-radius: 999px; padding: 8px 12px; }
+  .screen { display: none; flex: 1; flex-direction: column; }
+  .screen.on { display: flex; }
+  h1 { font-size: 1.7rem; line-height: 1.15; margin: 8px 0 8px; }
+  p.lead { color: var(--muted); margin: 0 0 18px; line-height: 1.45; }
+  .panic {
+    margin-top: 12px;
+    border: 0;
+    border-radius: 28px;
+    min-height: 220px;
+    background: radial-gradient(circle at 50% 40%, #fb7185, #9f1239 70%);
+    color: white;
+    font-size: 1.8rem;
+    font-weight: 800;
+    box-shadow: 0 16px 40px rgba(159, 18, 57, .35);
+  }
+  .panic small { display: block; font-weight: 500; font-size: .95rem; opacity: .9; margin-top: 6px; }
+  .row { display: flex; gap: 10px; margin-top: 14px; }
+  .row button, .wide { flex: 1; background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 14px 10px; }
+  .stage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+  .orb-wrap { width: 250px; height: 250px; display: grid; place-items: center; }
+  .orb {
+    width: 150px; height: 150px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #99f6e4, #0f766e 62%, #042f2e);
+    display: grid; place-items: center; text-align: center; padding: 16px;
+    font-weight: 700; transition: transform 4s ease-in-out;
+    box-shadow: 0 0 0 14px rgba(94, 234, 212, .08);
+  }
+  .orb.hold { transition: none; }
+  .orb.inhale { transform: scale(1.45); }
+  .orb.exhale { transform: scale(.82); transition-duration: 8s; }
+  .phase { color: var(--mint); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; font-size: .8rem; }
+  .msg { font-size: 1.2rem; min-height: 3.2em; margin: 12px 0; }
+  .count { font-variant-numeric: tabular-nums; font-size: 2rem; font-weight: 800; }
+  .actions { display: flex; gap: 10px; width: 100%; margin-top: 18px; }
+  .actions button { flex: 1; border-radius: 14px; padding: 14px; border: 1px solid var(--line); background: var(--card); }
+  .actions .stop { background: #3f1d2e; border-color: #9f1239; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 14px; margin-bottom: 12px; }
+  label { display: block; color: var(--muted); font-size: .85rem; margin-bottom: 6px; }
+  input, select, textarea {
+    width: 100%; background: #0c1222; border: 1px solid var(--line); border-radius: 12px; padding: 12px;
+  }
+  textarea { min-height: 72px; resize: vertical; }
+  .primary { background: var(--mint); color: #042f2e; border: 0; border-radius: 14px; padding: 14px; font-weight: 800; width: 100%; }
+  table { width: 100%; border-collapse: collapse; font-size: .78rem; }
+  th, td { border-bottom: 1px solid var(--line); padding: 8px 4px; text-align: center; }
+  td:first-child, th:first-child { text-align: left; width: 42%; }
+  td.score { cursor: pointer; font-weight: 700; }
+  .bars { display: flex; align-items: flex-end; gap: 8px; height: 120px; }
+  .bar { flex: 1; background: #1f6f68; border-radius: 8px 8px 2px 2px; min-height: 4px; position: relative; }
+  .bar span { position: absolute; top: -18px; left: 0; right: 0; text-align: center; font-size: .7rem; color: var(--muted); }
+  .days { display: flex; gap: 8px; margin-top: 6px; }
+  .days span { flex: 1; text-align: center; color: var(--muted); font-size: .75rem; }
+  .note { color: var(--muted); font-size: .8rem; line-height: 1.4; }
+  .log { border-top: 1px solid var(--line); padding: 10px 0; }
+  .pill { display: inline-block; border-radius: 999px; padding: 2px 8px; font-size: .75rem; background: #1e293b; }
+</style>
 </head>
 <body>
-  <div class="kutu" id="nefesModu">
-    <div id="daire">Hazır mısın?</div>
-    <div id="yazi">Başla</div>
-    <button id="btnBaslat" onclick="Baslat()">Kontrol sende</button>
-    <button id="btnBitir" onclick="Bitir()">Rahatladım</button>
-    <button onclick="acTablo()">Kaygı Takibi</button>
+<div class="app">
+  <div class="top">
+    <div class="brand">Kaygı <span>App</span></div>
+    <button class="ghost" id="voiceToggle" type="button">Ses açık</button>
   </div>
 
-  <div id="tabloModu" style="display:none;">
-    <table>
-      <thead>
-        <tr>
-          <th>Belirti</th>
-          <th>Pzt</th>
-          <th>Sal</th>
-          <th>Çar</th>
-          <th>Per</th>
-          <th>Cum</th>
-          <th>Cmt</th>
-          <th>Paz</th>
-        </tr>
-      </thead>
-      <tbody id="tbodyBelirtiler"></tbody>
-      <tfoot>
-        <tr id="toplamSatir"></tr>
-      </tfoot>
-    </table>
-    <button onclick="geriAnaSayfa()">Geri</button>
-  </div>
-
-  <div id="modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);align-items:center;justify-content:center;">
-    <div style="background:#fff;color:#000;padding:2vw;border-radius:1vw;">
-      <span id="modalMesaj"></span>
-      <br>
-      <button id="modalClose">Kapat</button>
+  <section class="screen on" id="home">
+    <h1>Atak gelince burası yeterli.</h1>
+    <p class="lead">Nefes ritmi ve kısa kayıt. Tedavi değildir; kötüleşirse acil yardım veya bir uzmana başvur.</p>
+    <button class="panic" id="startPanic" type="button">Atak geldi<small>Nefes ritmini başlat</small></button>
+    <div class="row">
+      <button type="button" data-go="track">Kaygı takibi</button>
+      <button type="button" data-go="history">Geçmiş</button>
     </div>
-  </div>
+    <div class="row">
+      <button type="button" data-go="support">Destek ol</button>
+      <button type="button" id="installBtn">Ana ekrana ekle</button>
+    </div>
+  </section>
 
-  <script src="script.js"></script>
+  <section class="screen" id="breathe">
+    <div class="stage">
+      <div class="phase" id="phase">Hazır</div>
+      <div class="orb-wrap"><div class="orb" id="orb">Burnundan nefes al</div></div>
+      <div class="count" id="count">4</div>
+      <div class="msg" id="msg">Yavaşça. Güvendesin.</div>
+      <div class="actions">
+        <button type="button" id="doneBtn">Rahatladım</button>
+        <button class="stop" type="button" id="abortBtn">Durdur</button>
+      </div>
+    </div>
+  </section>
 
-  <!-- Service Worker -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./service-worker.js')
-          .then(reg => console.log('Service Worker kayıtlı:', reg.scope))
-          .catch(err => console.log('Service Worker hata:', err));
-      });
+  <section class="screen" id="after">
+    <h1>Geçti. Bunu başardın.</h1>
+    <p class="lead">10 saniye. İstersen boş bırak.</p>
+    <div class="card">
+      <label>Şiddet (1 sakin, 10 çok şiddetli)</label>
+      <input id="severity" type="range" min="1" max="10" value="5" />
+      <div id="sevLabel" style="margin-top:6px">5</div>
+    </div>
+    <div class="card">
+      <label>Ne tetiklemiş olabilir?</label>
+      <input id="trigger" placeholder="kalabalık, haber, boşluk..." />
+    </div>
+    <div class="card">
+      <label>Nefes yardımcı oldu mu?</label>
+      <select id="helped">
+        <option value="evet">Evet, biraz olsun</option>
+        <option value="kismen">Kısmen</option>
+        <option value="hayir">Hayır</option>
+      </select>
+    </div>
+    <button class="primary" id="saveCrisis" type="button">Kaydet ve ana ekrana dön</button>
+  </section>
+
+  <section class="screen" id="track">
+    <div class="top" style="margin-top:0">
+      <h1 style="margin:0;font-size:1.3rem">Bu hafta</h1>
+      <button class="ghost" type="button" data-go="home">Geri</button>
+    </div>
+    <p class="lead">Belirtiye bas, puan 0–4 artsın. Telefonda kalır.</p>
+    <div class="card" style="overflow:auto">
+      <table>
+        <thead><tr><th>Belirti</th><th>Pzt</th><th>Sal</th><th>Çar</th><th>Per</th><th>Cum</th><th>Cmt</th><th>Paz</th></tr></thead>
+        <tbody id="symBody"></tbody>
+        <tfoot><tr id="sumRow"></tr></tfoot>
+      </table>
+    </div>
+    <div class="card">
+      <div class="note">Toplam renk: düşük yeşile, yüksek kırmızıya kayar. Bu bir tanı değildir.</div>
+    </div>
+  </section>
+
+  <section class="screen" id="history">
+    <div class="top">
+      <h1 style="margin:0;font-size:1.3rem">Kriz notları</h1>
+      <button class="ghost" type="button" data-go="home">Geri</button>
+    </div>
+    <div class="card">
+      <div class="bars" id="bars"></div>
+      <div class="days" id="dayLabels"></div>
+    </div>
+    <div id="logs"></div>
+    <p class="note">Kayıtlar yalnız bu tarayıcıda durur. Telefon değişince gitmez diye dışa aktarabilirsin.</p>
+    <div class="row">
+      <button type="button" id="exportBtn">Dışa aktar</button>
+      <button type="button" id="clearBtn">Kayıtları sil</button>
+    </div>
+  </section>
+
+  <section class="screen" id="support">
+    <div class="top">
+      <h1 style="margin:0;font-size:1.3rem">Destek</h1>
+      <button class="ghost" type="button" data-go="home">Geri</button>
+    </div>
+    <p class="lead">Ücretli duvar yok. İstersen kendi bağış linkini yapıştır; bu telefonda hatırlanır.</p>
+    <div class="card">
+      <label>Bağış veya ödeme linkin</label>
+      <input id="donateUrl" placeholder="https://..." />
+      <button class="primary" id="saveDonate" type="button" style="margin-top:10px">Linki kaydet</button>
+    </div>
+    <a class="primary" id="donateGo" href="#" style="display:none;text-align:center;text-decoration:none">Destek ol</a>
+    <p class="note" style="margin-top:14px">Mağaza aboneliği için ayrıca Google Play geliştirici hesabı (tek sefer 25 dolar) ve imzalı APK gerekir. Bu sayfa onun ham maddesi.</p>
+  </section>
+</div>
+<script>
+const symptoms = [
+  "Çarpıntı veya kalp hızlanması",
+  "Terleme, ürperme, kızarma",
+  "Titreme",
+  "Nefes darlığı",
+  "Boğuluyormuş gibi his",
+  "Göğüste ağrı veya sıkışma",
+  "Mide bulantısı, huzursuz mide",
+  "Baş dönmesi, denge kaybı",
+  "Gerçek değilmiş gibi his",
+  "Uyuşma veya karıncalanma"
+];
+const days = ["Pzt","Sal","Çar","Per","Cum","Cmt","Paz"];
+const inhaleLines = ["Burnundan al. Vücudun seni koruyor.","Yavaşça nefes al. Güvendesin.","İçeri çek. Panik küçülüyor."];
+const holdLines = ["Bu his geçici.","Kontrol sende.","Dur. Hisset. Geçecek."];
+const exhaleLines = ["Ağzından ver. Yük azalıyor.","Bırak gitsin.","Nefesini bırak. Kalbin sakinleşiyor."];
+
+const $ = (id) => document.getElementById(id);
+const screens = [...document.querySelectorAll(".screen")];
+function show(id) {
+  screens.forEach((s) => s.classList.toggle("on", s.id === id));
+  if (id === "track") renderTable();
+  if (id === "history") renderHistory();
+  if (id === "support") renderDonate();
+}
+document.querySelectorAll("[data-go]").forEach((b) => b.onclick = () => show(b.dataset.go));
+
+let voiceOn = localStorage.getItem("voice") !== "0";
+function paintVoice() { $("voiceToggle").textContent = voiceOn ? "Ses açık" : "Ses kapalı"; }
+paintVoice();
+$("voiceToggle").onclick = () => { voiceOn = !voiceOn; localStorage.setItem("voice", voiceOn ? "1" : "0"); paintVoice(); };
+function say(text) {
+  if (!voiceOn || !window.speechSynthesis) return;
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "tr-TR";
+  u.rate = 0.92;
+  speechSynthesis.cancel();
+  speechSynthesis.speak(u);
+}
+
+let timer = null, startedAt = 0;
+const cycle = [
+  { key: "al", sec: 4, cls: "inhale", label: "Burnundan nefes al", lines: inhaleLines },
+  { key: "tut", sec: 4, cls: "hold", label: "Nefesini tut", lines: holdLines },
+  { key: "ver", sec: 8, cls: "exhale", label: "Ağzından yavaşça ver", lines: exhaleLines }
+];
+
+function startBreath() {
+  show("breathe");
+  startedAt = Date.now();
+  let step = 0, left = cycle[0].sec;
+  const tick = () => {
+    const c = cycle[step];
+    $("phase").textContent = c.key === "al" ? "Al" : c.key === "tut" ? "Tut" : "Ver";
+    $("orb").textContent = c.label;
+    $("orb").className = "orb " + c.cls;
+    $("count").textContent = left;
+    if (left === c.sec) {
+      const line = c.lines[Math.floor(Math.random() * c.lines.length)];
+      $("msg").textContent = line;
+      say(c.label + ". " + line);
     }
-  </script>
+    left -= 1;
+    if (left < 0) {
+      step = (step + 1) % cycle.length;
+      left = cycle[step].sec - 1;
+      const c2 = cycle[step];
+      const line = c2.lines[Math.floor(Math.random() * c2.lines.length)];
+      $("phase").textContent = c2.key === "al" ? "Al" : c2.key === "tut" ? "Tut" : "Ver";
+      $("orb").textContent = c2.label;
+      $("orb").className = "orb " + c2.cls;
+      $("count").textContent = left + 1;
+      $("msg").textContent = line;
+      say(c2.label + ". " + line);
+    }
+  };
+  clearInterval(timer);
+  tick();
+  timer = setInterval(tick, 1000);
+}
+function stopBreath() {
+  clearInterval(timer);
+  timer = null;
+  if (window.speechSynthesis) speechSynthesis.cancel();
+  $("orb").className = "orb";
+}
+$("startPanic").onclick = startBreath;
+$("abortBtn").onclick = () => { stopBreath(); show("home"); };
+$("doneBtn").onclick = () => { stopBreath(); say("Geçti. Bunu başardın."); show("after"); };
+
+$("severity").oninput = () => { $("sevLabel").textContent = $("severity").value; };
+$("saveCrisis").onclick = () => {
+  const logs = JSON.parse(localStorage.getItem("logs") || "[]");
+  logs.unshift({
+    t: Date.now(),
+    sec: Math.round((Date.now() - startedAt) / 1000),
+    severity: Number($("severity").value),
+    trigger: $("trigger").value.trim(),
+    helped: $("helped").value
+  });
+  localStorage.setItem("logs", JSON.stringify(logs.slice(0, 200)));
+  $("trigger").value = "";
+  show("home");
+};
+
+function scores() {
+  let s = JSON.parse(localStorage.getItem("puanlar") || "null");
+  if (!s || s.length !== 10) s = Array.from({ length: 10 }, () => Array(7).fill(0));
+  return s;
+}
+function renderTable() {
+  const s = scores();
+  $("symBody").innerHTML = symptoms.map((name, r) => `<tr><td>${name}</td>${s[r].map((n, c) => `<td class="score" data-r="${r}" data-c="${c}">${n}</td>`).join("")}</tr>`).join("");
+  const totals = days.map((_, c) => s.reduce((a, row) => a + row[c], 0));
+  $("sumRow").innerHTML = `<td>Toplam</td>` + totals.map((n) => `<td style="background:${colorFor(n)};color:#042f2e">${n}</td>`).join("");
+  $("symBody").onclick = (e) => {
+    const td = e.target.closest(".score");
+    if (!td) return;
+    const data = scores();
+    const r = +td.dataset.r, c = +td.dataset.c;
+    data[r][c] = (data[r][c] + 1) % 5;
+    localStorage.setItem("puanlar", JSON.stringify(data));
+    renderTable();
+  };
+}
+function colorFor(n) {
+  if (n <= 2) return "#4ade80";
+  if (n <= 6) return "#a3e635";
+  if (n <= 10) return "#facc15";
+  if (n <= 20) return "#fb923c";
+  if (n <= 30) return "#f87171";
+  return "#b91c1c";
+}
+
+function renderHistory() {
+  const logs = JSON.parse(localStorage.getItem("logs") || "[]");
+  const counts = Array(7).fill(0);
+  const now = new Date();
+  logs.forEach((l) => {
+    const d = new Date(l.t);
+    const diff = Math.floor((new Date(now.getFullYear(), now.getMonth(), now.getDate()) - new Date(d.getFullYear(), d.getMonth(), d.getDate())) / 86400000);
+    if (diff >= 0 && diff < 7) counts[6 - diff] += 1;
+  });
+  const max = Math.max(1, ...counts);
+  $("bars").innerHTML = counts.map((n) => `<div class="bar" style="height:${Math.max(6, n / max * 100)}%"><span>${n}</span></div>`).join("");
+  $("dayLabels").innerHTML = counts.map((_, i) => {
+    const d = new Date(); d.setDate(d.getDate() - (6 - i));
+    return `<span>${days[(d.getDay() + 6) % 7]}</span>`;
+  }).join("");
+  $("logs").innerHTML = logs.slice(0, 20).map((l) => {
+    const when = new Date(l.t).toLocaleString("tr-TR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
+    return `<div class="log"><strong>${when}</strong> <span class="pill">şiddet ${l.severity}</span> <span class="pill">${l.helped}</span><div class="note">${l.trigger || "tetikleyici yazılmadı"} · ${l.sec || 0} sn</div></div>`;
+  }).join("") || `<p class="note">Henüz kriz notu yok.</p>`;
+}
+$("exportBtn").onclick = () => {
+  const blob = new Blob([JSON.stringify({ puanlar: scores(), logs: JSON.parse(localStorage.getItem("logs") || "[]") }, null, 2)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "kaygi-kayit.json";
+  a.click();
+};
+$("clearBtn").onclick = () => {
+  if (confirm("Tüm kayıtlar silinsin mi?")) {
+    localStorage.removeItem("logs");
+    localStorage.removeItem("puanlar");
+    renderHistory();
+  }
+};
+
+function renderDonate() {
+  const url = localStorage.getItem("donate") || "";
+  $("donateUrl").value = url;
+  const go = $("donateGo");
+  if (url.startsWith("http")) { go.href = url; go.style.display = "block"; } else go.style.display = "none";
+}
+$("saveDonate").onclick = () => {
+  localStorage.setItem("donate", $("donateUrl").value.trim());
+  renderDonate();
+};
+
+let deferred;
+window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); deferred = e; });
+$("installBtn").onclick = async () => {
+  if (deferred) { deferred.prompt(); deferred = null; return; }
+  alert("Telefonda tarayıcı menüsünden Ana ekrana ekle de. Uygulama gibi açılır.");
+};
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+</script>
 </body>
 </html>
