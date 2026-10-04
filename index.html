@@ -3,387 +3,378 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<meta name="theme-color" content="#0c1222" />
+<meta name="theme-color" content="#070b14" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<title>Kaygı App</title>
+<meta name="apple-mobile-web-app-title" content="Kaygı" />
+<title>Kaygı</title>
 <link rel="manifest" href="manifest.json" />
 <link rel="icon" href="icon-192.png" />
 <link rel="apple-touch-icon" href="icon-192.png" />
 <style>
   :root {
-    --bg: #0c1222;
-    --card: #141c2f;
-    --line: #243049;
-    --text: #e8eefc;
-    --muted: #93a0bd;
-    --mint: #5eead4;
-    --mint-dim: #134e4a;
-    --danger: #fb7185;
-    --warn: #fbbf24;
-    --ok: #4ade80;
+    --bg: #070b14;
+    --ink: #e7eef8;
+    --muted: #8ea0b8;
+    --line: rgba(255,255,255,.08);
+    --good: #7dcea0;
+    --mid: #e6c27a;
+    --bad: #e07a7a;
   }
-  * { box-sizing: border-box; }
-  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); font-family: "Segoe UI", system-ui, sans-serif; }
-  body { min-height: 100dvh; }
-  button, input, select, textarea { font: inherit; color: inherit; }
-  button { cursor: pointer; }
-  .app { max-width: 480px; margin: 0 auto; min-height: 100dvh; padding: 18px 16px 28px; display: flex; flex-direction: column; }
-  .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
-  .brand { font-weight: 700; letter-spacing: .02em; }
-  .brand span { color: var(--mint); }
-  .ghost { background: transparent; border: 1px solid var(--line); color: var(--muted); border-radius: 999px; padding: 8px 12px; }
-  .screen { display: none; flex: 1; flex-direction: column; }
-  .screen.on { display: flex; }
-  h1 { font-size: 1.7rem; line-height: 1.15; margin: 8px 0 8px; }
-  p.lead { color: var(--muted); margin: 0 0 18px; line-height: 1.45; }
-  .panic {
-    margin-top: 12px;
-    border: 0;
-    border-radius: 28px;
-    min-height: 220px;
-    background: radial-gradient(circle at 50% 40%, #fb7185, #9f1239 70%);
-    color: white;
-    font-size: 1.8rem;
-    font-weight: 800;
-    box-shadow: 0 16px 40px rgba(159, 18, 57, .35);
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    min-height: 100dvh;
+    background:
+      radial-gradient(900px 520px at 50% -10%, rgba(90,120,180,.18), transparent 60%),
+      var(--bg);
   }
-  .panic small { display: block; font-weight: 500; font-size: .95rem; opacity: .9; margin-top: 6px; }
-  .row { display: flex; gap: 10px; margin-top: 14px; }
-  .row button, .wide { flex: 1; background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 14px 10px; }
-  .stage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-  .orb-wrap { width: 250px; height: 250px; display: grid; place-items: center; }
+  .app { max-width: 480px; margin: 0 auto; padding: 18px 18px 28px; }
+  header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .brand { font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+  .sound {
+    border: 1px solid var(--line); background: rgba(255,255,255,.03);
+    color: var(--ink); border-radius: 999px; padding: 7px 12px; font-size: 13px;
+  }
+  h1 { font-size: 28px; font-weight: 560; letter-spacing: -.03em; margin: 10px 0 6px; }
+  .lead { color: var(--muted); font-size: 15px; line-height: 1.45; margin: 0 0 8px; }
+  .stage {
+    position: relative; height: 340px; display: grid; place-items: center; margin: 6px 0 4px;
+  }
+  .halo, .orb, .core {
+    position: absolute; border-radius: 50%;
+    transform: scale(var(--s, .72));
+    transition: transform 4s linear, opacity 1.2s ease, filter 1.2s ease;
+  }
+  .halo {
+    width: 280px; height: 280px;
+    background: radial-gradient(circle, rgba(126,168,214,.16), transparent 68%);
+    filter: blur(8px); opacity: .7;
+  }
   .orb {
-    width: 150px; height: 150px; border-radius: 50%;
-    background: radial-gradient(circle at 35% 30%, #99f6e4, #0f766e 62%, #042f2e);
-    display: grid; place-items: center; text-align: center; padding: 16px;
-    font-weight: 700; transition: transform 4s ease-in-out;
-    box-shadow: 0 0 0 14px rgba(94, 234, 212, .08);
+    width: 210px; height: 210px;
+    background:
+      radial-gradient(circle at 38% 32%, rgba(255,255,255,.22), transparent 28%),
+      radial-gradient(circle at 50% 58%, rgba(143,186,214,.55), rgba(46,78,120,.18) 62%, transparent 74%);
+    box-shadow: 0 0 60px rgba(120,170,210,.18);
+    opacity: .9;
   }
-  .orb.hold { transition: none; }
-  .orb.inhale { transform: scale(1.45); }
-  .orb.exhale { transform: scale(.82); transition-duration: 8s; }
-  .phase { color: var(--mint); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; font-size: .8rem; }
-  .msg { font-size: 1.2rem; min-height: 3.2em; margin: 12px 0; }
-  .count { font-variant-numeric: tabular-nums; font-size: 2rem; font-weight: 800; }
-  .actions { display: flex; gap: 10px; width: 100%; margin-top: 18px; }
-  .actions button { flex: 1; border-radius: 14px; padding: 14px; border: 1px solid var(--line); background: var(--card); }
-  .actions .stop { background: #3f1d2e; border-color: #9f1239; }
-  .card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 14px; margin-bottom: 12px; }
-  label { display: block; color: var(--muted); font-size: .85rem; margin-bottom: 6px; }
+  .core {
+    width: 132px; height: 132px;
+    background: radial-gradient(circle at 40% 35%, #f4f7fb, #b9cfe4 42%, #6f93b4 78%);
+    box-shadow: inset 0 -18px 30px rgba(40,70,110,.25), 0 10px 40px rgba(0,0,0,.25);
+  }
+  body.inhale { --s: 1; }
+  body.hold { --s: 1; }
+  body.exhale { --s: .72; }
+  body.hold .orb { filter: saturate(1.05); }
+  body.exhale .halo { transition-duration: 8s; }
+  body.exhale .orb { transition-duration: 8s; }
+  body.exhale .core { transition-duration: 8s; }
+  body.inhale .halo, body.inhale .orb, body.inhale .core { transition-duration: 4s; }
+  .phase {
+    position: relative; z-index: 2; text-align: center; pointer-events: none;
+  }
+  .phase b { display: block; font-size: 22px; font-weight: 560; letter-spacing: -.02em; }
+  .phase span { color: var(--muted); font-size: 13px; }
+  .count {
+    margin-top: 6px; font-variant-numeric: tabular-nums; font-size: 28px; font-weight: 520;
+  }
+  .go, .soft, .ghost {
+    width: 100%; border: 0; border-radius: 16px; padding: 16px 18px;
+    font-size: 17px; font-weight: 600;
+  }
+  .go { background: #e7eef8; color: #101722; }
+  .soft { background: rgba(255,255,255,.06); color: var(--ink); margin-top: 10px; }
+  .ghost { background: transparent; color: var(--muted); margin-top: 8px; }
+  .row { display: flex; gap: 8px; }
+  .row > * { flex: 1; }
+  .card {
+    margin-top: 18px; padding: 14px; border: 1px solid var(--line);
+    border-radius: 18px; background: rgba(255,255,255,.025);
+  }
+  .card h2 { margin: 0 0 8px; font-size: 15px; font-weight: 600; }
+  label { display: block; font-size: 13px; color: var(--muted); margin: 10px 0 6px; }
   input, select, textarea {
-    width: 100%; background: #0c1222; border: 1px solid var(--line); border-radius: 12px; padding: 12px;
+    width: 100%; border: 1px solid var(--line); background: #0c121c; color: var(--ink);
+    border-radius: 12px; padding: 12px; font-size: 16px; font-family: inherit;
   }
   textarea { min-height: 72px; resize: vertical; }
-  .primary { background: var(--mint); color: #042f2e; border: 0; border-radius: 14px; padding: 14px; font-weight: 800; width: 100%; }
-  table { width: 100%; border-collapse: collapse; font-size: .78rem; }
-  th, td { border-bottom: 1px solid var(--line); padding: 8px 4px; text-align: center; }
-  td:first-child, th:first-child { text-align: left; width: 42%; }
-  td.score { cursor: pointer; font-weight: 700; }
-  .bars { display: flex; align-items: flex-end; gap: 8px; height: 120px; }
-  .bar { flex: 1; background: #1f6f68; border-radius: 8px 8px 2px 2px; min-height: 4px; position: relative; }
-  .bar span { position: absolute; top: -18px; left: 0; right: 0; text-align: center; font-size: .7rem; color: var(--muted); }
-  .days { display: flex; gap: 8px; margin-top: 6px; }
-  .days span { flex: 1; text-align: center; color: var(--muted); font-size: .75rem; }
-  .note { color: var(--muted); font-size: .8rem; line-height: 1.4; }
-  .log { border-top: 1px solid var(--line); padding: 10px 0; }
-  .pill { display: inline-block; border-radius: 999px; padding: 2px 8px; font-size: .75rem; background: #1e293b; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th, td { border-bottom: 1px solid var(--line); padding: 7px 2px; text-align: center; }
+  th:first-child, td:first-child { text-align: left; color: var(--muted); }
+  td.hit { cursor: pointer; font-variant-numeric: tabular-nums; }
+  .n0 { color: #66788c; } .n1 { color: var(--good); } .n2 { color: #b7d7a8; }
+  .n3 { color: var(--mid); } .n4 { color: var(--bad); }
+  .bars { display: flex; align-items: flex-end; gap: 8px; height: 92px; margin-top: 8px; }
+  .bars div { flex: 1; background: linear-gradient(#9eb6cf, #3d5874); border-radius: 8px 8px 3px 3px; min-height: 4px; }
+  .note { color: var(--muted); font-size: 12px; line-height: 1.45; margin-top: 14px; }
+  .hidden { display: none; }
 </style>
 </head>
 <body>
-<div class="app">
-  <div class="top">
-    <div class="brand">Kaygı <span>App</span></div>
-    <button class="ghost" id="voiceToggle" type="button">Ses açık</button>
-  </div>
-
-  <section class="screen on" id="home">
+  <div class="app">
+    <header>
+      <div class="brand">Kaygı</div>
+      <button class="sound" id="soundBtn" type="button">Ses kapalı</button>
+    </header>
     <h1>Atak gelince burası yeterli.</h1>
-    <p class="lead">Nefes ritmi ve kısa kayıt. Tedavi değildir; kötüleşirse acil yardım veya bir uzmana başvur.</p>
-    <button class="panic" id="startPanic" type="button">Atak geldi<small>Nefes ritmini başlat</small></button>
-    <div class="row">
-      <button type="button" data-go="track">Kaygı takibi</button>
-      <button type="button" data-go="history">Geçmiş</button>
-    </div>
-    <div class="row">
-      <button type="button" data-go="support">Destek ol</button>
-      <button type="button" id="installBtn">Ana ekrana ekle</button>
-    </div>
-  </section>
+    <p class="lead">Konuşma yok. Sadece yavaş bir ışık ve alçak bir zemin sesi. Ritme uy, bitince not düş.</p>
 
-  <section class="screen" id="breathe">
-    <div class="stage">
-      <div class="phase" id="phase">Hazır</div>
-      <div class="orb-wrap"><div class="orb" id="orb">Burnundan nefes al</div></div>
-      <div class="count" id="count">4</div>
-      <div class="msg" id="msg">Yavaşça. Güvendesin.</div>
-      <div class="actions">
-        <button type="button" id="doneBtn">Rahatladım</button>
-        <button class="stop" type="button" id="abortBtn">Durdur</button>
+    <div class="stage" id="stage">
+      <div class="halo"></div>
+      <div class="orb"></div>
+      <div class="core"></div>
+      <div class="phase">
+        <b id="phaseLabel">Hazır</b>
+        <span id="phaseHint">İstediğin anda başla</span>
+        <div class="count" id="count"></div>
       </div>
     </div>
-  </section>
 
-  <section class="screen" id="after">
-    <h1>Geçti. Bunu başardın.</h1>
-    <p class="lead">10 saniye. İstersen boş bırak.</p>
-    <div class="card">
-      <label>Şiddet (1 sakin, 10 çok şiddetli)</label>
-      <input id="severity" type="range" min="1" max="10" value="5" />
-      <div id="sevLabel" style="margin-top:6px">5</div>
+    <button class="go" id="startBtn" type="button">Başlıyorum</button>
+    <div class="row hidden" id="liveRow">
+      <button class="soft" id="doneBtn" type="button">Geçti</button>
+      <button class="ghost" id="stopBtn" type="button">Durdur</button>
     </div>
-    <div class="card">
-      <label>Ne tetiklemiş olabilir?</label>
-      <input id="trigger" placeholder="kalabalık, haber, boşluk..." />
-    </div>
-    <div class="card">
-      <label>Nefes yardımcı oldu mu?</label>
-      <select id="helped">
-        <option value="evet">Evet, biraz olsun</option>
-        <option value="kismen">Kısmen</option>
-        <option value="hayir">Hayır</option>
+
+    <section class="card hidden" id="after">
+      <h2>Bitti. Bunu atlattın.</h2>
+      <label>Şiddet</label>
+      <select id="severity">
+        <option value="1">Hafif</option>
+        <option value="2" selected>Orta</option>
+        <option value="3">Sert</option>
       </select>
-    </div>
-    <button class="primary" id="saveCrisis" type="button">Kaydet ve ana ekrana dön</button>
-  </section>
+      <label>Ne tetiklemiş olabilir</label>
+      <input id="trigger" placeholder="kalabalık, haber, boşluk..." />
+      <label>Kısa not</label>
+      <textarea id="journal" placeholder="istersen bir cümle"></textarea>
+      <button class="go" id="saveBtn" type="button" style="margin-top:12px">Kaydet</button>
+    </section>
 
-  <section class="screen" id="track">
-    <div class="top" style="margin-top:0">
-      <h1 style="margin:0;font-size:1.3rem">Bu hafta</h1>
-      <button class="ghost" type="button" data-go="home">Geri</button>
-    </div>
-    <p class="lead">Belirtiye bas, puan 0–4 artsın. Telefonda kalır.</p>
-    <div class="card" style="overflow:auto">
-      <table>
-        <thead><tr><th>Belirti</th><th>Pzt</th><th>Sal</th><th>Çar</th><th>Per</th><th>Cum</th><th>Cmt</th><th>Paz</th></tr></thead>
-        <tbody id="symBody"></tbody>
-        <tfoot><tr id="sumRow"></tr></tfoot>
-      </table>
-    </div>
-    <div class="card">
-      <div class="note">Toplam renk: düşük yeşile, yüksek kırmızıya kayar. Bu bir tanı değildir.</div>
-    </div>
-  </section>
-
-  <section class="screen" id="history">
-    <div class="top">
-      <h1 style="margin:0;font-size:1.3rem">Kriz notları</h1>
-      <button class="ghost" type="button" data-go="home">Geri</button>
-    </div>
-    <div class="card">
+    <section class="card">
+      <h2>Bu hafta</h2>
       <div class="bars" id="bars"></div>
-      <div class="days" id="dayLabels"></div>
-    </div>
-    <div id="logs"></div>
-    <p class="note">Kayıtlar yalnız bu tarayıcıda durur. Telefon değişince gitmez diye dışa aktarabilirsin.</p>
-    <div class="row">
-      <button type="button" id="exportBtn">Dışa aktar</button>
-      <button type="button" id="clearBtn">Kayıtları sil</button>
-    </div>
-  </section>
+      <div class="note" id="weekNote"></div>
+    </section>
 
-  <section class="screen" id="support">
-    <div class="top">
-      <h1 style="margin:0;font-size:1.3rem">Destek</h1>
-      <button class="ghost" type="button" data-go="home">Geri</button>
-    </div>
-    <p class="lead">Ücretli duvar yok. İstersen kendi bağış linkini yapıştır; bu telefonda hatırlanır.</p>
-    <div class="card">
-      <label>Bağış veya ödeme linkin</label>
-      <input id="donateUrl" placeholder="https://..." />
-      <button class="primary" id="saveDonate" type="button" style="margin-top:10px">Linki kaydet</button>
-    </div>
-    <a class="primary" id="donateGo" href="#" style="display:none;text-align:center;text-decoration:none">Destek ol</a>
-    <p class="note" style="margin-top:14px">Mağaza aboneliği için ayrıca Google Play geliştirici hesabı (tek sefer 25 dolar) ve imzalı APK gerekir. Bu sayfa onun ham maddesi.</p>
-  </section>
-</div>
+    <section class="card">
+      <h2>Belirti tablosu</h2>
+      <div style="overflow-x:auto">
+        <table id="grid"></table>
+      </div>
+      <p class="note">Hücreye bas: 0’dan 4’e çıkar. Sadece bu telefonda durur.</p>
+    </section>
+
+    <section class="card">
+      <h2>Destek</h2>
+      <p class="lead" style="margin:0">İstersen bir bağış linki koy. Boşsa bu kutu gizlenir.</p>
+      <input id="donate" placeholder="https://..." style="margin-top:8px" />
+      <a class="soft" id="donateGo" style="display:none;text-align:center;text-decoration:none;margin-top:10px" href="#" target="_blank" rel="noopener">Destek ol</a>
+    </section>
+    <p class="note">Bu bir nefes ve not aracıdır. Tedavi, teşhis veya acil yardım yerine geçmez. Tehlike hissedersen 112.</p>
+  </div>
 <script>
-const symptoms = [
-  "Çarpıntı veya kalp hızlanması",
-  "Terleme, ürperme, kızarma",
-  "Titreme",
-  "Nefes darlığı",
-  "Boğuluyormuş gibi his",
-  "Göğüste ağrı veya sıkışma",
-  "Mide bulantısı, huzursuz mide",
-  "Baş dönmesi, denge kaybı",
-  "Gerçek değilmiş gibi his",
-  "Uyuşma veya karıncalanma"
-];
-const days = ["Pzt","Sal","Çar","Per","Cum","Cmt","Paz"];
-const inhaleLines = ["Burnundan al. Vücudun seni koruyor.","Yavaşça nefes al. Güvendesin.","İçeri çek. Panik küçülüyor."];
-const holdLines = ["Bu his geçici.","Kontrol sende.","Dur. Hisset. Geçecek."];
-const exhaleLines = ["Ağzından ver. Yük azalıyor.","Bırak gitsin.","Nefesini bırak. Kalbin sakinleşiyor."];
+const SYMPTOMS = ["Çarpıntı","Terleme","Nefes","Boğulma","Göğüs","Mide","Baş dönmesi","Derealizasyon","Uyuşma","Korku"];
+const DAYS = ["Pzt","Sal","Çar","Per","Cum","Cmt","Paz"];
+const KEY = "kaygi-v3";
+const state = load();
+let running = false, timer = null, audioOn = false, audio = null;
 
-const $ = (id) => document.getElementById(id);
-const screens = [...document.querySelectorAll(".screen")];
-function show(id) {
-  screens.forEach((s) => s.classList.toggle("on", s.id === id));
-  if (id === "track") renderTable();
-  if (id === "history") renderHistory();
-  if (id === "support") renderDonate();
+function load() {
+  try { return JSON.parse(localStorage.getItem(KEY)) || {}; }
+  catch { return {}; }
 }
-document.querySelectorAll("[data-go]").forEach((b) => b.onclick = () => show(b.dataset.go));
-
-let voiceOn = localStorage.getItem("voice") !== "0";
-function paintVoice() { $("voiceToggle").textContent = voiceOn ? "Ses açık" : "Ses kapalı"; }
-paintVoice();
-$("voiceToggle").onclick = () => { voiceOn = !voiceOn; localStorage.setItem("voice", voiceOn ? "1" : "0"); paintVoice(); };
-function say(text) {
-  if (!voiceOn || !window.speechSynthesis) return;
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = "tr-TR";
-  u.rate = 0.92;
-  speechSynthesis.cancel();
-  speechSynthesis.speak(u);
+function save() { localStorage.setItem(KEY, JSON.stringify(state)); }
+function weekKey(d = new Date()) {
+  const t = new Date(d); const day = (t.getDay() + 6) % 7;
+  t.setDate(t.getDate() - day); t.setHours(0,0,0,0);
+  return t.toISOString().slice(0,10);
+}
+function ensureWeek() {
+  const k = weekKey();
+  if (!state.weeks) state.weeks = {};
+  if (!state.weeks[k]) state.weeks[k] = SYMPTOMS.map(() => Array(7).fill(0));
+  state.week = k;
+  if (!state.crises) state.crises = [];
+  return state.weeks[k];
 }
 
-let timer = null, startedAt = 0;
-const cycle = [
-  { key: "al", sec: 4, cls: "inhale", label: "Burnundan nefes al", lines: inhaleLines },
-  { key: "tut", sec: 4, cls: "hold", label: "Nefesini tut", lines: holdLines },
-  { key: "ver", sec: 8, cls: "exhale", label: "Ağzından yavaşça ver", lines: exhaleLines }
-];
-
-function startBreath() {
-  show("breathe");
-  startedAt = Date.now();
-  let step = 0, left = cycle[0].sec;
-  const tick = () => {
-    const c = cycle[step];
-    $("phase").textContent = c.key === "al" ? "Al" : c.key === "tut" ? "Tut" : "Ver";
-    $("orb").textContent = c.label;
-    $("orb").className = "orb " + c.cls;
-    $("count").textContent = left;
-    if (left === c.sec) {
-      const line = c.lines[Math.floor(Math.random() * c.lines.length)];
-      $("msg").textContent = line;
-      say(c.label + ". " + line);
-    }
-    left -= 1;
-    if (left < 0) {
-      step = (step + 1) % cycle.length;
-      left = cycle[step].sec - 1;
-      const c2 = cycle[step];
-      const line = c2.lines[Math.floor(Math.random() * c2.lines.length)];
-      $("phase").textContent = c2.key === "al" ? "Al" : c2.key === "tut" ? "Tut" : "Ver";
-      $("orb").textContent = c2.label;
-      $("orb").className = "orb " + c2.cls;
-      $("count").textContent = left + 1;
-      $("msg").textContent = line;
-      say(c2.label + ". " + line);
-    }
-  };
-  clearInterval(timer);
-  tick();
-  timer = setInterval(tick, 1000);
-}
-function stopBreath() {
-  clearInterval(timer);
-  timer = null;
-  if (window.speechSynthesis) speechSynthesis.cancel();
-  $("orb").className = "orb";
-}
-$("startPanic").onclick = startBreath;
-$("abortBtn").onclick = () => { stopBreath(); show("home"); };
-$("doneBtn").onclick = () => { stopBreath(); say("Geçti. Bunu başardın."); show("after"); };
-
-$("severity").oninput = () => { $("sevLabel").textContent = $("severity").value; };
-$("saveCrisis").onclick = () => {
-  const logs = JSON.parse(localStorage.getItem("logs") || "[]");
-  logs.unshift({
-    t: Date.now(),
-    sec: Math.round((Date.now() - startedAt) / 1000),
-    severity: Number($("severity").value),
-    trigger: $("trigger").value.trim(),
-    helped: $("helped").value
+function renderGrid() {
+  const grid = ensureWeek();
+  let html = "<tr><th></th>" + DAYS.map(d => `<th>${d}</th>`).join("") + "<th></th></tr>";
+  SYMPTOMS.forEach((name, r) => {
+    const sum = grid[r].reduce((a,b) => a+b, 0);
+    html += `<tr><td>${name}</td>` + grid[r].map((n,c) => `<td class="hit n${n}" data-r="${r}" data-c="${c}">${n}</td>`).join("") + `<td>${sum}</td></tr>`;
   });
-  localStorage.setItem("logs", JSON.stringify(logs.slice(0, 200)));
-  $("trigger").value = "";
-  show("home");
+  document.getElementById("grid").innerHTML = html;
+  const days = DAYS.map((_, c) => grid.reduce((a, row) => a + row[c], 0));
+  const max = Math.max(4, ...days);
+  document.getElementById("bars").innerHTML = days.map(n => `<div style="height:${Math.max(6, (n/max)*92)}px" title="${n}"></div>`).join("");
+  const total = days.reduce((a,b) => a+b, 0);
+  document.getElementById("weekNote").textContent = total === 0 ? "Bu hafta henüz işaret yok." : `Haftalık toplam ${total}. Yüksek günler dalganın kendisi, başarısızlık değil.`;
+}
+document.getElementById("grid").onclick = (e) => {
+  const cell = e.target.closest("[data-r]");
+  if (!cell) return;
+  const grid = ensureWeek();
+  const r = +cell.dataset.r, c = +cell.dataset.c;
+  grid[r][c] = (grid[r][c] + 1) % 5;
+  save(); renderGrid();
 };
 
-function scores() {
-  let s = JSON.parse(localStorage.getItem("puanlar") || "null");
-  if (!s || s.length !== 10) s = Array.from({ length: 10 }, () => Array(7).fill(0));
-  return s;
-}
-function renderTable() {
-  const s = scores();
-  $("symBody").innerHTML = symptoms.map((name, r) => `<tr><td>${name}</td>${s[r].map((n, c) => `<td class="score" data-r="${r}" data-c="${c}">${n}</td>`).join("")}</tr>`).join("");
-  const totals = days.map((_, c) => s.reduce((a, row) => a + row[c], 0));
-  $("sumRow").innerHTML = `<td>Toplam</td>` + totals.map((n) => `<td style="background:${colorFor(n)};color:#042f2e">${n}</td>`).join("");
-  $("symBody").onclick = (e) => {
-    const td = e.target.closest(".score");
-    if (!td) return;
-    const data = scores();
-    const r = +td.dataset.r, c = +td.dataset.c;
-    data[r][c] = (data[r][c] + 1) % 5;
-    localStorage.setItem("puanlar", JSON.stringify(data));
-    renderTable();
-  };
-}
-function colorFor(n) {
-  if (n <= 2) return "#4ade80";
-  if (n <= 6) return "#a3e635";
-  if (n <= 10) return "#facc15";
-  if (n <= 20) return "#fb923c";
-  if (n <= 30) return "#f87171";
-  return "#b91c1c";
+function setPhase(name, hint, n, cls) {
+  document.body.classList.remove("inhale","hold","exhale");
+  if (cls) document.body.classList.add(cls);
+  document.getElementById("phaseLabel").textContent = name;
+  document.getElementById("phaseHint").textContent = hint;
+  document.getElementById("count").textContent = n || "";
 }
 
-function renderHistory() {
-  const logs = JSON.parse(localStorage.getItem("logs") || "[]");
-  const counts = Array(7).fill(0);
-  const now = new Date();
-  logs.forEach((l) => {
-    const d = new Date(l.t);
-    const diff = Math.floor((new Date(now.getFullYear(), now.getMonth(), now.getDate()) - new Date(d.getFullYear(), d.getMonth(), d.getDate())) / 86400000);
-    if (diff >= 0 && diff < 7) counts[6 - diff] += 1;
-  });
-  const max = Math.max(1, ...counts);
-  $("bars").innerHTML = counts.map((n) => `<div class="bar" style="height:${Math.max(6, n / max * 100)}%"><span>${n}</span></div>`).join("");
-  $("dayLabels").innerHTML = counts.map((_, i) => {
-    const d = new Date(); d.setDate(d.getDate() - (6 - i));
-    return `<span>${days[(d.getDay() + 6) % 7]}</span>`;
-  }).join("");
-  $("logs").innerHTML = logs.slice(0, 20).map((l) => {
-    const when = new Date(l.t).toLocaleString("tr-TR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
-    return `<div class="log"><strong>${when}</strong> <span class="pill">şiddet ${l.severity}</span> <span class="pill">${l.helped}</span><div class="note">${l.trigger || "tetikleyici yazılmadı"} · ${l.sec || 0} sn</div></div>`;
-  }).join("") || `<p class="note">Henüz kriz notu yok.</p>`;
-}
-$("exportBtn").onclick = () => {
-  const blob = new Blob([JSON.stringify({ puanlar: scores(), logs: JSON.parse(localStorage.getItem("logs") || "[]") }, null, 2)], { type: "application/json" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "kaygi-kayit.json";
-  a.click();
-};
-$("clearBtn").onclick = () => {
-  if (confirm("Tüm kayıtlar silinsin mi?")) {
-    localStorage.removeItem("logs");
-    localStorage.removeItem("puanlar");
-    renderHistory();
+class Calm {
+  constructor() {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    this.ctx = new AC();
+    this.master = this.ctx.createGain();
+    this.master.gain.value = 0.0001;
+    this.master.connect(this.ctx.destination);
+    this.nodes = [];
+    const bed = [
+      [110, .045], [164.81, .03], [220, .02], [329.63, .012]
+    ];
+    bed.forEach(([f, g], i) => {
+      const o = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      const filter = this.ctx.createBiquadFilter();
+      o.type = i === 3 ? "triangle" : "sine";
+      o.frequency.value = f;
+      filter.type = "lowpass";
+      filter.frequency.value = 680;
+      gain.gain.value = g;
+      o.connect(filter); filter.connect(gain); gain.connect(this.master);
+      o.start();
+      this.nodes.push(o);
+      this.lfo(gain.gain, g, .35 + i * .2, 0.004);
+    });
+    const noise = this.ctx.createBufferSource();
+    const buffer = this.ctx.createBuffer(1, this.ctx.sampleRate * 3, this.ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    let last = 0;
+    for (let i = 0; i < data.length; i++) {
+      const white = Math.random() * 2 - 1;
+      last = (last + 0.02 * white) / 1.02;
+      data[i] = last * 3.2;
+    }
+    noise.buffer = buffer; noise.loop = true;
+    const ng = this.ctx.createGain();
+    const nf = this.ctx.createBiquadFilter();
+    nf.type = "lowpass"; nf.frequency.value = 420;
+    ng.gain.value = 0.035;
+    noise.connect(nf); nf.connect(ng); ng.connect(this.master);
+    noise.start();
+    this.air = ng;
+    this.nodes.push(noise);
   }
-};
-
-function renderDonate() {
-  const url = localStorage.getItem("donate") || "";
-  $("donateUrl").value = url;
-  const go = $("donateGo");
-  if (url.startsWith("http")) { go.href = url; go.style.display = "block"; } else go.style.display = "none";
+  lfo(param, base, speed, depth) {
+    const o = this.ctx.createOscillator();
+    const g = this.ctx.createGain();
+    o.frequency.value = speed; g.gain.value = depth;
+    o.connect(g); g.connect(param); o.start();
+    param.value = base;
+  }
+  async fade(v) {
+    if (this.ctx.state === "suspended") await this.ctx.resume();
+    const now = this.ctx.currentTime;
+    this.master.gain.cancelScheduledValues(now);
+    this.master.gain.setValueAtTime(this.master.gain.value, now);
+    this.master.gain.linearRampToValueAtTime(v, now + 1.4);
+  }
+  breath(kind) {
+    const now = this.ctx.currentTime;
+    this.air.gain.cancelScheduledValues(now);
+    this.air.gain.setValueAtTime(this.air.gain.value, now);
+    const target = kind === "in" ? 0.07 : kind === "out" ? 0.02 : 0.04;
+    this.air.gain.linearRampToValueAtTime(target, now + (kind === "out" ? 7.5 : 3.6));
+  }
+  stop() { this.fade(0.0001); }
 }
-$("saveDonate").onclick = () => {
-  localStorage.setItem("donate", $("donateUrl").value.trim());
-  renderDonate();
+
+async function ensureAudio() {
+  if (!audio) audio = new Calm();
+  if (audio.ctx.state === "suspended") await audio.ctx.resume();
+}
+
+document.getElementById("soundBtn").onclick = async () => {
+  audioOn = !audioOn;
+  document.getElementById("soundBtn").textContent = audioOn ? "Ses açık" : "Ses kapalı";
+  if (audioOn) { await ensureAudio(); audio.fade(running ? 0.22 : 0.08); }
+  else if (audio) audio.stop();
 };
 
-let deferred;
-window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); deferred = e; });
-$("installBtn").onclick = async () => {
-  if (deferred) { deferred.prompt(); deferred = null; return; }
-  alert("Telefonda tarayıcı menüsünden Ana ekrana ekle de. Uygulama gibi açılır.");
+function wait(ms) { return new Promise(r => timer = setTimeout(r, ms)); }
+async function cycle() {
+  const steps = [
+    ["Al", "burundan, acele etme", 4, "inhale", "in"],
+    ["Tut", "zorlama, sadece kal", 4, "hold", "hold"],
+    ["Ver", "ağızdan, uzun bırak", 8, "exhale", "out"]
+  ];
+  while (running) {
+    for (const [name, hint, sec, cls, kind] of steps) {
+      if (!running) return;
+      if (audioOn && audio) audio.breath(kind);
+      for (let n = sec; n >= 1 && running; n--) {
+        setPhase(name, hint, n, cls);
+        await wait(1000);
+      }
+    }
+  }
+}
+
+document.getElementById("startBtn").onclick = async () => {
+  if (audioOn) { await ensureAudio(); audio.fade(0.22); }
+  running = true;
+  document.getElementById("startBtn").classList.add("hidden");
+  document.getElementById("liveRow").classList.remove("hidden");
+  document.getElementById("after").classList.add("hidden");
+  cycle();
 };
+function halt(showAfter) {
+  running = false; clearTimeout(timer);
+  setPhase("Hazır", "İstediğin anda başla", "", "");
+  document.getElementById("startBtn").classList.remove("hidden");
+  document.getElementById("liveRow").classList.add("hidden");
+  if (audio && audioOn) audio.fade(0.05);
+  if (showAfter) document.getElementById("after").classList.remove("hidden");
+}
+document.getElementById("stopBtn").onclick = () => halt(false);
+document.getElementById("doneBtn").onclick = () => halt(true);
+document.getElementById("saveBtn").onclick = () => {
+  state.crises.push({
+    t: Date.now(),
+    severity: document.getElementById("severity").value,
+    trigger: document.getElementById("trigger").value.trim(),
+    note: document.getElementById("journal").value.trim()
+  });
+  save();
+  document.getElementById("after").classList.add("hidden");
+  document.getElementById("trigger").value = "";
+  document.getElementById("journal").value = "";
+};
+document.getElementById("donate").oninput = (e) => {
+  const url = e.target.value.trim();
+  state.donate = url; save();
+  const a = document.getElementById("donateGo");
+  a.style.display = url ? "block" : "none";
+  a.href = url || "#";
+};
+if (state.donate) {
+  document.getElementById("donate").value = state.donate;
+  document.getElementById("donateGo").style.display = "block";
+  document.getElementById("donateGo").href = state.donate;
+}
+renderGrid();
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
 </script>
 </body>
