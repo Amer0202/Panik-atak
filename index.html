@@ -20,14 +20,11 @@
   header { display:flex; justify-content:space-between; align-items:center; }
   button, textarea { font-family:inherit; }
   .link { border:0; background:transparent; color:var(--ink); font-size:16px; padding:8px 0; }
-  .stage { position:relative; height:360px; display:grid; place-items:center; }
-  .halo,.orb,.core { position:absolute; border-radius:50%; transform:scale(var(--s,.74)); transition:transform 4s cubic-bezier(.4,0,.2,1); }
-  .halo { width:300px; height:300px; background:radial-gradient(circle, rgba(47,168,122,.20), transparent 68%); filter:blur(10px); }
-  .orb { width:220px; height:220px; background:radial-gradient(circle at 36% 30%, rgba(255,255,255,.20), transparent 26%), radial-gradient(circle at 50% 55%, rgba(86,196,150,.55), rgba(18,42,64,.15) 62%, transparent 72%); box-shadow:0 0 40px rgba(31,169,113,.18); }
-  .core { width:128px; height:128px; background:radial-gradient(circle at 40% 34%, #f7fffb, #b7ead4 42%, #2f9a72 80%); }
+  .stage { height:280px; display:grid; place-items:center; }
+  .orb { width:210px; height:210px; border-radius:50%; background:#1fa971; transform:scale(var(--s,.74)); transition:transform 4s cubic-bezier(.4,0,.2,1); box-shadow:0 0 0 18px rgba(31,169,113,.18); }
   body.inhale { --s:1; } body.hold { --s:1; } body.exhale { --s:.74; }
-  body.exhale .halo, body.exhale .orb, body.exhale .core { transition-duration:8s; }
-  .phase { position:relative; z-index:2; text-align:center; width:min(250px,74vw); pointer-events:none; }
+  body.exhale .orb { transition-duration:8s; }
+  .phase { text-align:center; margin:8px 0 16px; }
   .phase b { display:block; font-size:22px; font-weight:650; }
   .phase span { display:block; margin-top:8px; color:var(--ink); font-size:16px; line-height:1.35; min-height:44px; }
   .count { margin-top:4px; font-variant-numeric:tabular-nums; font-size:28px; }
@@ -57,13 +54,13 @@
     <section id="breath">
       <header><button class="link" id="toTable" type="button">Tablo</button></header>
       <div class="stage">
-        <div class="halo"></div><div class="orb"></div><div class="core"></div>
-        <div class="phase">
+        <div class="orb"></div>
+      </div>
+      <div class="phase">
           <b id="phaseLabel">Hazır mısın?</b>
           <span id="phaseHint">Kontrol sende.</span>
           <div class="count" id="count"></div>
         </div>
-      </div>
       <button class="go" id="startBtn" type="button">Kontrol sende</button>
       <div class="row hidden" id="liveRow">
         <button class="go" id="doneBtn" type="button">Rahatladım</button>
@@ -73,8 +70,7 @@
         <h2>Geçti. Bunu başardın.</h2>
         <button class="go" id="noteBtn" type="button">Tabloya not ekle</button>
       </section>
-      <div class="sound"><span>Nefes sesi</span><button class="soft" id="soundBtn" type="button" style="width:auto;padding:8px 14px">Kapalı</button></div>
-    </section>
+          </section>
     <section id="table" class="hidden">
       <header><button class="link" id="toBreath" type="button">← Nefes</button></header>
       <h1>Kaygı takibi</h1>
@@ -149,62 +145,19 @@ document.getElementById("saveNote").onclick = ()=>{
   persist(); document.getElementById("journal").value = "";
   document.getElementById("saved").textContent = text ? "Kaydedildi. Bu telefonda durur." : "Boş not kaydedilmedi.";
 };
-let running=false, timer=null, last={al:"",tut:"",ver:""}, audioOn=false, audio=null;
+let running=false, timer=null, last={al:"",tut:"",ver:""};
 function pick(kind){ let line=last[kind]; while(line===last[kind]) line=LINES[kind][Math.floor(Math.random()*LINES[kind].length)]; last[kind]=line; return line; }
 function setPhase(name,hint,n,cls){ document.body.classList.remove("inhale","hold","exhale"); if(cls) document.body.classList.add(cls); document.getElementById("phaseLabel").textContent=name; document.getElementById("phaseHint").textContent=hint; document.getElementById("count").textContent=n||""; }
-class Breath {
-  constructor(){
-    const AC = window.AudioContext || window.webkitAudioContext;
-    this.ctx = new AC();
-    this.master = this.ctx.createGain();
-    this.master.gain.value = 0.0001;
-    this.filter = this.ctx.createBiquadFilter();
-    this.filter.type = "lowpass";
-    this.filter.frequency.value = 240;
-    this.filter.Q.value = 0.4;
-    const n = this.ctx.sampleRate * 4;
-    const buffer = this.ctx.createBuffer(1, n, this.ctx.sampleRate);
-    const data = buffer.getChannelData(0);
-    let last = 0;
-    for (let i=0;i<n;i++){ const white=Math.random()*2-1; last = last*0.985 + white*0.015; data[i]=last*8; }
-    this.src = this.ctx.createBufferSource();
-    this.src.buffer = buffer; this.src.loop = true;
-    this.src.connect(this.filter); this.filter.connect(this.master); this.master.connect(this.ctx.destination); this.src.start();
-  }
-  async resume(){ if (this.ctx.state==="suspended") await this.ctx.resume(); }
-  set(mode){
-    const now = this.ctx.currentTime;
-    const vol = audioOn ? 0.55 : 0.0001;
-    this.master.gain.cancelScheduledValues(now);
-    this.master.gain.setValueAtTime(Math.max(this.master.gain.value, 0.0001), now);
-    this.filter.frequency.cancelScheduledValues(now);
-    this.filter.frequency.setValueAtTime(this.filter.frequency.value, now);
-    if (mode==="in"){ this.master.gain.linearRampToValueAtTime(vol, now+3.6); this.filter.frequency.linearRampToValueAtTime(520, now+3.6); }
-    else if (mode==="out"){ this.master.gain.linearRampToValueAtTime(vol*0.45, now+7.4); this.filter.frequency.linearRampToValueAtTime(180, now+7.4); }
-    else if (mode==="hold"){ this.master.gain.linearRampToValueAtTime(vol*0.22, now+1.2); }
-    else this.master.gain.linearRampToValueAtTime(0.0001, now+0.4);
-  }
-}
-async function ensure(){ if(!audio) audio=new Breath(); await audio.resume(); }
-document.getElementById("soundBtn").onclick = async ()=>{
-  audioOn = !audioOn;
-  document.getElementById("soundBtn").textContent = audioOn ? "Açık" : "Kapalı";
-  document.getElementById("soundBtn").style.background = audioOn ? "#1fa971" : "#182236";
-  document.getElementById("soundBtn").style.color = audioOn ? "#042216" : "#f4f7fb";
-  if (audioOn){ await ensure(); audio.set(running ? "in" : "hold"); } else if (audio) audio.set("off");
-};
 function wait(ms){ return new Promise(r=>timer=setTimeout(r,ms)); }
 async function cycle(){
   const steps=[["Burnundan nefes al","al",4,"inhale","in"],["Nefesini tut","tut",4,"hold","hold"],["Ağzından yavaşça ver","ver",8,"exhale","out"]];
   while(running) for (const [name,kind,sec,cls,breath] of steps){
     if(!running) return;
-    if (audioOn && audio) audio.set(breath);
     const line = pick(kind);
     for(let n=sec;n>=1 && running;n--){ setPhase(name,line,n,cls); await wait(1000); }
   }
 }
-document.getElementById("startBtn").onclick = async ()=>{
-  if (audioOn) await ensure();
+document.getElementById("startBtn").onclick = ()=>{
   running = true;
   document.getElementById("startBtn").classList.add("hidden");
   document.getElementById("liveRow").classList.remove("hidden");
@@ -218,7 +171,6 @@ function halt(done){
   document.getElementById("startBtn").classList.remove("hidden");
   document.getElementById("liveRow").classList.add("hidden");
   document.getElementById("after").classList.toggle("hidden", !done);
-  if (audio) audio.set("off");
 }
 document.getElementById("stopBtn").onclick=()=>halt(false);
 document.getElementById("doneBtn").onclick=()=>halt(true);
