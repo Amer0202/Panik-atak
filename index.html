@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<meta name="theme-color" content="#070b14" />
+<meta name="theme-color" content="#231c17" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="Kaygı" />
@@ -12,85 +12,107 @@
 <link rel="icon" href="icon-192.png" />
 <link rel="apple-touch-icon" href="icon-192.png" />
 <style>
-  :root { --bg:#070b14; --ink:#e7eef8; --muted:#8ea0b8; --line:rgba(255,255,255,.08); }
+  :root { --bg:#231c17; --ink:#f6efe6; --muted:#e4d3c0; --line:rgba(246,239,230,.16); --card:#2c241e; }
   * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   html, body { margin:0; background:var(--bg); color:var(--ink); }
-  body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; min-height:100dvh;
-    background:radial-gradient(900px 520px at 50% -10%, rgba(90,120,180,.18), transparent 60%), var(--bg); }
+  body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; min-height:100dvh; }
   .app { max-width:520px; margin:0 auto; padding:18px 16px 32px; }
-  header { display:flex; justify-content:space-between; align-items:center; }
-  .brand { font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); }
-  .sound { border:1px solid var(--line); background:rgba(255,255,255,.03); color:var(--ink); border-radius:999px; padding:7px 12px; font-size:13px; }
-  h1 { font-size:26px; font-weight:560; letter-spacing:-.03em; margin:12px 0 6px; }
-  .lead { color:var(--muted); font-size:15px; line-height:1.45; margin:0 0 4px; }
-  .stage { position:relative; height:320px; display:grid; place-items:center; }
+  header { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+  button, select, input { font-family:inherit; }
+  .link { border:0; background:transparent; color:var(--ink); font-size:16px; padding:8px 0; }
+  .pill { border:1px solid var(--line); background:#2c241e; color:var(--ink); border-radius:999px; padding:8px 12px; font-size:14px; }
+  h1 { font-size:28px; font-weight:560; letter-spacing:-.03em; margin:18px 0 8px; }
+  .stage { position:relative; height:340px; display:grid; place-items:center; }
   .halo,.orb,.core { position:absolute; border-radius:50%; transform:scale(var(--s,.72)); transition:transform 4s linear; }
-  .halo { width:280px; height:280px; background:radial-gradient(circle, rgba(126,168,214,.16), transparent 68%); filter:blur(8px); }
-  .orb { width:210px; height:210px; background:radial-gradient(circle at 38% 32%, rgba(255,255,255,.22), transparent 28%), radial-gradient(circle at 50% 58%, rgba(143,186,214,.55), rgba(46,78,120,.18) 62%, transparent 74%); box-shadow:0 0 60px rgba(120,170,210,.18); }
-  .core { width:132px; height:132px; background:radial-gradient(circle at 40% 35%, #f4f7fb, #b9cfe4 42%, #6f93b4 78%); }
+  .halo { width:290px; height:290px; background:radial-gradient(circle, rgba(214,164,106,.22), transparent 68%); filter:blur(8px); }
+  .orb { width:214px; height:214px; background:radial-gradient(circle at 38% 32%, rgba(255,236,214,.28), transparent 28%), radial-gradient(circle at 50% 58%, rgba(214,164,106,.62), rgba(92,62,40,.2) 64%, transparent 74%); }
+  .core { width:136px; height:136px; background:radial-gradient(circle at 40% 35%, #fff6ea, #e7c39a 46%, #b88858 78%); }
   body.inhale { --s:1; } body.hold { --s:1; } body.exhale { --s:.72; }
   body.exhale .halo, body.exhale .orb, body.exhale .core { transition-duration:8s; }
   body.inhale .halo, body.inhale .orb, body.inhale .core { transition-duration:4s; }
-  .phase { position:relative; z-index:2; text-align:center; width:min(240px,70vw); pointer-events:none; }
-  .phase b { display:block; font-size:20px; font-weight:560; }
-  .phase span { display:block; margin-top:6px; color:#d5e2f0; font-size:14px; line-height:1.35; min-height:38px; }
-  .count { margin-top:4px; font-variant-numeric:tabular-nums; font-size:26px; }
-  .go,.soft,.ghost { width:100%; border:0; border-radius:16px; padding:16px 18px; font-size:17px; font-weight:600; }
-  .go { background:#e7eef8; color:#101722; } .soft { background:rgba(255,255,255,.06); color:var(--ink); } .ghost { background:transparent; color:var(--muted); }
+  .phase { position:relative; z-index:2; text-align:center; width:min(250px,74vw); pointer-events:none; }
+  .phase b { display:block; font-size:22px; font-weight:600; }
+  .phase span { display:block; margin-top:8px; color:var(--ink); font-size:16px; line-height:1.35; min-height:44px; }
+  .count { margin-top:4px; font-variant-numeric:tabular-nums; font-size:28px; font-weight:560; }
+  .go,.soft { width:100%; border:0; border-radius:16px; padding:16px 18px; font-size:17px; font-weight:650; }
+  .go { background:#f3e6d4; color:#231c17; } .soft { background:#3a2e26; color:var(--ink); }
   .row { display:flex; gap:8px; margin-top:10px; } .row > * { flex:1; }
-  .card { margin-top:16px; padding:14px; border:1px solid var(--line); border-radius:18px; background:rgba(255,255,255,.025); }
-  .card h2 { margin:0 0 8px; font-size:15px; }
-  label { display:block; font-size:13px; color:var(--muted); margin:10px 0 6px; }
-  input,select,textarea { width:100%; border:1px solid var(--line); background:#0c121c; color:var(--ink); border-radius:12px; padding:12px; font-size:16px; font-family:inherit; }
-  textarea { min-height:72px; }
+  .soundbox { margin-top:14px; padding:12px; border:1px solid var(--line); border-radius:16px; background:var(--card); }
+  .soundbox p { margin:0 0 8px; color:var(--muted); font-size:14px; }
+  .choices { display:flex; gap:6px; flex-wrap:wrap; }
+  .choices button { border:1px solid var(--line); background:transparent; color:var(--ink); border-radius:999px; padding:8px 10px; font-size:14px; }
+  .choices button.on { background:#f3e6d4; color:#231c17; border-color:#f3e6d4; }
+  input[type=range] { width:100%; margin-top:10px; }
+  .card { margin-top:14px; padding:14px; border:1px solid var(--line); border-radius:18px; background:var(--card); }
+  .card h2 { margin:0 0 8px; font-size:16px; }
+  label { display:block; font-size:14px; color:var(--muted); margin:10px 0 6px; }
+  input[type=text], select, textarea { width:100%; border:1px solid var(--line); background:#1b1512; color:var(--ink); border-radius:12px; padding:12px; font-size:16px; }
+  textarea { min-height:74px; }
   .wrap { overflow-x:auto; }
-  table { width:100%; border-collapse:collapse; font-size:12px; }
-  th,td { border-bottom:1px solid var(--line); padding:8px 4px; text-align:center; }
-  th:first-child, td:first-child { text-align:left; color:var(--muted); min-width:148px; }
-  td.hit { font-variant-numeric:tabular-nums; }
-  .sum { border-radius:8px; font-weight:700; cursor:pointer; }
-  .note { color:var(--muted); font-size:12px; line-height:1.45; margin-top:12px; }
-  .modal { position:fixed; inset:0; background:rgba(0,0,0,.55); display:grid; place-items:end center; padding:16px; }
-  .sheet { width:min(440px,100%); background:#121a27; border-radius:18px; padding:16px; }
-  .sheet p { line-height:1.45; margin:0 0 12px; }
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  th, td { border-bottom:1px solid var(--line); padding:8px 4px; text-align:center; color:var(--ink); }
+  th:first-child, td:first-child { text-align:left; min-width:150px; }
+  .sum { border-radius:8px; font-weight:700; }
+  .note { color:var(--muted); font-size:13px; line-height:1.45; margin-top:14px; }
   .hidden { display:none !important; }
+  .modal { position:fixed; inset:0; background:rgba(20,14,10,.62); display:grid; place-items:end center; padding:16px; z-index:5; }
+  .sheet { width:min(440px,100%); background:#2c241e; border-radius:18px; padding:16px; color:var(--ink); }
+  .sheet p { line-height:1.45; margin:0 0 12px; font-size:16px; }
 </style>
 </head>
 <body>
   <div class="app">
-    <header>
-      <div class="brand">Kaygı</div>
-      <button class="sound" id="soundBtn" type="button">Ses kapalı</button>
-    </header>
-    <h1>Atak gelince burası yeterli.</h1>
-    <p class="lead">Küre ritmi gösterir. Cümleler senin yazdıkların. Ses sadece zemin, konuşma yok.</p>
-    <div class="stage">
-      <div class="halo"></div><div class="orb"></div><div class="core"></div>
-      <div class="phase">
-        <b id="phaseLabel">Hazır mısın?</b>
-        <span id="phaseHint">Kontrol sende.</span>
-        <div class="count" id="count"></div>
+    <section id="breath">
+      <header>
+        <button class="link" id="toTable" type="button">Tablo</button>
+        <span></span>
+      </header>
+      <div class="stage">
+        <div class="halo"></div><div class="orb"></div><div class="core"></div>
+        <div class="phase">
+          <b id="phaseLabel">Hazır mısın?</b>
+          <span id="phaseHint">Kontrol sende.</span>
+          <div class="count" id="count"></div>
+        </div>
       </div>
-    </div>
-    <button class="go" id="startBtn" type="button">Kontrol sende</button>
-    <div class="row hidden" id="liveRow">
-      <button class="soft" id="doneBtn" type="button">Rahatladım</button>
-      <button class="ghost" id="stopBtn" type="button">Durdur</button>
-    </div>
-    <section class="card hidden" id="after">
-      <h2 id="afterTitle">Geçti. Bunu başardın.</h2>
-      <label>Şiddet</label>
-      <select id="severity"><option value="1">Hafif</option><option value="2" selected>Orta</option><option value="3">Sert</option></select>
-      <label>Ne tetiklemiş olabilir</label>
-      <input id="trigger" placeholder="kalabalık, haber, boşluk..." />
-      <button class="go" id="saveBtn" type="button" style="margin-top:12px">Kaydet</button>
+      <button class="go" id="startBtn" type="button">Kontrol sende</button>
+      <div class="row hidden" id="liveRow">
+        <button class="soft" id="doneBtn" type="button">Rahatladım</button>
+        <button class="soft" id="stopBtn" type="button">Durdur</button>
+      </div>
+      <section class="card hidden" id="after">
+        <h2 id="afterTitle">Geçti. Bunu başardın.</h2>
+        <button class="go" id="noteBtn" type="button">Tabloya not ekle</button>
+      </section>
+      <div class="soundbox">
+        <p>Ses kapalı başlar. Açınca alttan seviyesini yükselt.</p>
+        <div class="choices" id="sounds">
+          <button type="button" data-sound="off" class="on">Kapalı</button>
+          <button type="button" data-sound="pad">Zemin</button>
+          <button type="button" data-sound="rain">Yağmur</button>
+          <button type="button" data-sound="bowl">Kase</button>
+        </div>
+        <input id="volume" type="range" min="0" max="100" value="70" />
+      </div>
     </section>
-    <section class="card">
-      <h2>Kaygı takibi</h2>
-      <div class="wrap"><table id="grid"></table></div>
-      <p class="note">Hücreye bas, 0’dan 4’e çıkar. Gün toplamına basınca o güne göre kısa tavsiye açılır. Eski puanların duruyorsa onları da okur.</p>
+
+    <section id="table" class="hidden">
+      <header>
+        <button class="link" id="toBreath" type="button">← Nefes</button>
+      </header>
+      <h1>Kaygı takibi</h1>
+      <div class="card">
+        <label>Bu atak için bir cümle</label>
+        <textarea id="journal" placeholder="istersen bir cümle"></textarea>
+        <button class="go" id="saveNote" type="button" style="margin-top:10px">Kaydet</button>
+        <p class="note" id="saved">Kayıt sadece bu telefonda durur.</p>
+      </div>
+      <div class="card">
+        <div class="wrap"><table id="grid"></table></div>
+        <p class="note">Hücreye bas, 0’dan 4’e çıkar. Gün toplamına basınca kısa tavsiye açılır.</p>
+      </div>
+      <p class="note">Bu bir nefes ve not aracıdır, tedavi değildir. Tehlike hissedersen 112.</p>
     </section>
-    <p class="note">Bu bir nefes ve not aracıdır. Tedavi veya acil yardım yerine geçmez. Tehlike hissedersen 112.</p>
   </div>
   <div class="modal hidden" id="modal"><div class="sheet"><p id="modalText"></p><button class="go" id="modalClose" type="button">Kapat</button></div></div>
 <script>
@@ -101,7 +123,7 @@ const LINES = {
   tut: ["Her şey yolunda.","Bu his geçici.","Kontrol sende, beden dengede.","Nefesini tut… sabırlı ol.","Dur, hisset ve sakinleş.","Bedenin rahat, zihin huzurlu.","Bir an dur… hislerini izle.","Panik geçiyor, sen güçlüsün.","Sakin ol… nefesini hisset.","Dikkatini topla, beden dengede.","Zihnini gözlemle, her şey normal.","Durakla… kontrol sende.","Sabırlı ol… dalgalar geçici.","Bedenin sana güven veriyor.","Hisset ve kabul et, panik azalıyor."],
   ver: ["Ağzından ver… yük azalıyor.","Nefesi bırak… kalbin sakinleşiyor.","Bırak gitsin… dalga sönüyor.","Nefes ver… gevşe ve rahatla.","Dışarı bırak, huzuru hisset.","Bırak gitsin… tüm stres uzaklaşıyor.","Panik dağılıyor, sen güçlüsün.","Stres akıyor, beden hafifliyor.","Rahatla… her nefesle sakinleş.","Yavaşça ver… kontrol sende.","Her nefesle huzur artıyor.","Bırak, bırak… kaygı azalıyor.","Stres uzaklaşıyor, sen güven içindesin.","Nefesini bırak, panik küçülüyor.","Huzur dol… her nefesle gevşe."]
 };
-const KEY = "kaygi-v4";
+const KEY = "kaygi-v5";
 let state = {};
 try { state = JSON.parse(localStorage.getItem(KEY)) || {}; } catch { state = {}; }
 if (!state.grid) {
@@ -109,28 +131,29 @@ if (!state.grid) {
   try { old = JSON.parse(localStorage.getItem("puanlar")); } catch {}
   state.grid = Array.isArray(old) && old.length === 10 ? old : SYMPTOMS.map(() => Array(7).fill(0));
 }
+if (!state.notes) state.notes = [];
 function persist() { localStorage.setItem(KEY, JSON.stringify(state)); localStorage.setItem("puanlar", JSON.stringify(state.grid)); }
 function advice(total) {
   if (total <= 2) return "Harika! Çok az kaygı belirtisi. Ev içinde kısa yürüyüş yapabilirsin, nefes egzersizine devam et.";
   if (total <= 6) return "Birkaç kaygı belirtisi gözlemledin. Nefes egzersizine devam et ve sakin aktiviteler yap.";
-  if (total <= 10) return "Hafif düzeyde fiziksel kaygı var. Kısa indoor walking önerilir. Derin nefes ve farkındalık egzersizleri yap.";
+  if (total <= 10) return "Hafif düzeyde fiziksel kaygı var. Ev içinde kısa yürüyüş iyi gelir. Derin nefes ve farkındalık egzersizleri yap.";
   if (total <= 20) return "Orta düzeyde kaygı. Bedenini dinle, nefes egzersizleri ve hafif ev içi egzersizler yap. Kaygı normal, panik geçici.";
-  if (total <= 30) return "Şiddetli fiziksel kaygı. Yavaşça otur, derin nefes al-ver yap. Ev içi hareketlerle rahatlamayı dene. Her şey geçici, kalbin sağlam çalışıyor.";
-  return "Aşırı kaygı! Hemen kendine zaman ayır, sakin bir ortamda dinlen. Nefes ve farkındalık egzersizleri yap. Tekrar güvenli olduğunu hatırla.";
+  if (total <= 30) return "Şiddetli fiziksel kaygı. Yavaşça otur, derin nefes al-ver yap. Ev içi hareketlerle rahatlamayı dene. Her şey geçici. Kalbin hızlı atıyor, bu atakta sık görülen bir tepki.";
+  return "Yoğun bir gün. Kendine zaman ayır, sakin bir ortamda dinlen. Nefes ve farkındalık egzersizleri yap. Bu dalga da geçecek.";
 }
 function color(total) {
-  if (total <= 2) return ["#22c55e","#022c22"];
-  if (total <= 6) return ["#a3e635","#022c22"];
-  if (total <= 10) return ["#facc15","#022c22"];
-  if (total <= 20) return ["#f97316","#fff"];
-  if (total <= 30) return ["#ef4444","#fff"];
-  return ["#b91c1c","#fff"];
+  if (total <= 2) return ["#c9e6c2","#231c17"];
+  if (total <= 6) return ["#e7efb8","#231c17"];
+  if (total <= 10) return ["#f3e0a2","#231c17"];
+  if (total <= 20) return ["#e7b48a","#231c17"];
+  if (total <= 30) return ["#d9897a","#231c17"];
+  return ["#b85b52","#f6efe6"];
 }
 function renderGrid() {
   const totals = DAYS.map((_, c) => state.grid.reduce((a,row) => a + row[c], 0));
   let html = "<tr><th>Belirti</th>" + DAYS.map(d => `<th>${d}</th>`).join("") + "</tr>";
   SYMPTOMS.forEach((name, r) => {
-    html += `<tr><td>${name}</td>` + state.grid[r].map((n,c) => `<td class="hit" data-r="${r}" data-c="${c}">${n}</td>`).join("") + "</tr>";
+    html += `<tr><td>${name}</td>` + state.grid[r].map((n,c) => `<td data-r="${r}" data-c="${c}">${n}</td>`).join("") + "</tr>";
   });
   html += "<tr><td>Toplam</td>" + totals.map((n,c) => {
     const [bg,fg] = color(n);
@@ -142,8 +165,7 @@ document.getElementById("grid").onclick = (e) => {
   const cell = e.target.closest("[data-r]");
   const day = e.target.closest("[data-day]");
   if (cell) {
-    const r = +cell.dataset.r, c = +cell.dataset.c;
-    state.grid[r][c] = (state.grid[r][c] + 1) % 5;
+    state.grid[+cell.dataset.r][+cell.dataset.c] = (state.grid[+cell.dataset.r][+cell.dataset.c] + 1) % 5;
     persist(); renderGrid();
   } else if (day) {
     const total = state.grid.reduce((a,row) => a + row[+day.dataset.day], 0);
@@ -152,7 +174,21 @@ document.getElementById("grid").onclick = (e) => {
   }
 };
 document.getElementById("modalClose").onclick = () => document.getElementById("modal").classList.add("hidden");
-let running = false, timer = null, audioOn = false, audio = null, last = {al:"",tut:"",ver:""};
+document.getElementById("toTable").onclick = () => show("table");
+document.getElementById("toBreath").onclick = () => show("breath");
+document.getElementById("noteBtn").onclick = () => show("table");
+function show(which) {
+  document.getElementById("breath").classList.toggle("hidden", which !== "breath");
+  document.getElementById("table").classList.toggle("hidden", which !== "table");
+}
+document.getElementById("saveNote").onclick = () => {
+  const text = document.getElementById("journal").value.trim();
+  if (text) state.notes.push({ t: Date.now(), text });
+  persist();
+  document.getElementById("journal").value = "";
+  document.getElementById("saved").textContent = text ? "Kaydedildi. Bu telefonda durur." : "Boş not kaydedilmedi.";
+};
+let running = false, timer = null, last = {al:"",tut:"",ver:""}, sound = "off", audio = null;
 function pick(kind) {
   let line = last[kind];
   while (line === last[kind]) line = LINES[kind][Math.floor(Math.random()*LINES[kind].length)];
@@ -165,50 +201,78 @@ function setPhase(name, hint, n, cls) {
   document.getElementById("phaseHint").textContent = hint;
   document.getElementById("count").textContent = n || "";
 }
-class Calm {
+class Bed {
   constructor() {
     const AC = window.AudioContext || window.webkitAudioContext;
     this.ctx = new AC();
     this.master = this.ctx.createGain();
     this.master.gain.value = 0.0001;
     this.master.connect(this.ctx.destination);
-    [[110,.045],[164.81,.03],[220,.02],[329.63,.012]].forEach(([f,g],i) => {
+    this.pad = this.ctx.createGain(); this.rain = this.ctx.createGain(); this.bowl = this.ctx.createGain();
+    this.pad.gain.value = 0; this.rain.gain.value = 0; this.bowl.gain.value = 0;
+    this.pad.connect(this.master); this.rain.connect(this.master); this.bowl.connect(this.master);
+    [[98,.5],[146.8,.32],[196,.22],[293.7,.12]].forEach(([f,g],i) => {
       const o = this.ctx.createOscillator(), gain = this.ctx.createGain(), filter = this.ctx.createBiquadFilter();
-      o.type = i === 3 ? "triangle" : "sine"; o.frequency.value = f; filter.type = "lowpass"; filter.frequency.value = 680; gain.gain.value = g;
-      o.connect(filter); filter.connect(gain); gain.connect(this.master); o.start();
+      o.type = i === 3 ? "triangle" : "sine"; o.frequency.value = f;
+      filter.type = "lowpass"; filter.frequency.value = 900; gain.gain.value = g;
+      o.connect(filter); filter.connect(gain); gain.connect(this.pad); o.start();
     });
     const noise = this.ctx.createBufferSource();
-    const buffer = this.ctx.createBuffer(1, this.ctx.sampleRate * 3, this.ctx.sampleRate);
-    const data = buffer.getChannelData(0); let prev = 0;
-    for (let i = 0; i < data.length; i++) { const w = Math.random()*2-1; prev = (prev + 0.02*w)/1.02; data[i] = prev*3.2; }
+    const buffer = this.ctx.createBuffer(1, this.ctx.sampleRate * 2, this.ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < data.length; i++) data[i] = Math.random()*2-1;
     noise.buffer = buffer; noise.loop = true;
-    const ng = this.ctx.createGain(), nf = this.ctx.createBiquadFilter();
-    nf.type = "lowpass"; nf.frequency.value = 420; ng.gain.value = 0.035;
-    noise.connect(nf); nf.connect(ng); ng.connect(this.master); noise.start(); this.air = ng;
+    const nf = this.ctx.createBiquadFilter(); nf.type = "bandpass"; nf.frequency.value = 1200; nf.Q.value = .4;
+    noise.connect(nf); nf.connect(this.rain); noise.start();
+    this.bowlOsc = this.ctx.createOscillator();
+    this.bowlGain = this.ctx.createGain();
+    this.bowlOsc.type = "sine"; this.bowlOsc.frequency.value = 246.9; this.bowlGain.gain.value = 0;
+    this.bowlOsc.connect(this.bowlGain); this.bowlGain.connect(this.bowl); this.bowlOsc.start();
+    this.tick = setInterval(() => this.strike(), 7000);
   }
-  async fade(v) { if (this.ctx.state === "suspended") await this.ctx.resume(); const now = this.ctx.currentTime; this.master.gain.cancelScheduledValues(now); this.master.gain.setValueAtTime(this.master.gain.value, now); this.master.gain.linearRampToValueAtTime(v, now+1.4); }
-  breath(kind) { const now = this.ctx.currentTime; this.air.gain.cancelScheduledValues(now); this.air.gain.setValueAtTime(this.air.gain.value, now); this.air.gain.linearRampToValueAtTime(kind==="in"?0.07:kind==="out"?0.02:0.04, now+(kind==="out"?7.5:3.6)); }
+  async resume() { if (this.ctx.state === "suspended") await this.ctx.resume(); }
+  level() { return Math.max(0.02, document.getElementById("volume").value / 100); }
+  async set(mode) {
+    await this.resume();
+    const now = this.ctx.currentTime;
+    const v = this.level();
+    this.master.gain.cancelScheduledValues(now);
+    this.master.gain.setValueAtTime(this.master.gain.value, now);
+    this.master.gain.linearRampToValueAtTime(mode === "off" ? 0.0001 : v, now + .4);
+    [["pad", this.pad],["rain", this.rain],["bowl", this.bowl]].forEach(([name, node]) => {
+      node.gain.cancelScheduledValues(now);
+      node.gain.setValueAtTime(node.gain.value, now);
+      node.gain.linearRampToValueAtTime(name === mode ? 1 : 0, now + .4);
+    });
+  }
+  strike() {
+    if (sound !== "bowl") return;
+    const now = this.ctx.currentTime;
+    this.bowlGain.gain.cancelScheduledValues(now);
+    this.bowlGain.gain.setValueAtTime(0.0001, now);
+    this.bowlGain.gain.exponentialRampToValueAtTime(0.8, now + .04);
+    this.bowlGain.gain.exponentialRampToValueAtTime(0.0001, now + 4.5);
+  }
 }
-async function ensureAudio() { if (!audio) audio = new Calm(); if (audio.ctx.state === "suspended") await audio.ctx.resume(); }
-document.getElementById("soundBtn").onclick = async () => {
-  audioOn = !audioOn;
-  document.getElementById("soundBtn").textContent = audioOn ? "Ses açık" : "Ses kapalı";
-  if (audioOn) { await ensureAudio(); audio.fade(running ? 0.22 : 0.08); } else if (audio) audio.fade(0.0001);
+async function ensure() { if (!audio) audio = new Bed(); await audio.resume(); if (sound !== "off") audio.set(sound); }
+document.getElementById("sounds").onclick = async (e) => {
+  const btn = e.target.closest("[data-sound]"); if (!btn) return;
+  sound = btn.dataset.sound;
+  document.querySelectorAll("#sounds button").forEach(b => b.classList.toggle("on", b === btn));
+  await ensure(); audio.set(sound); if (sound === "bowl") audio.strike();
 };
+document.getElementById("volume").oninput = () => { if (audio && sound !== "off") audio.set(sound); };
 function wait(ms) { return new Promise(r => timer = setTimeout(r, ms)); }
 async function cycle() {
-  const steps = [["Burnundan nefes al","al",4,"inhale","in"],["Nefesini tut","tut",4,"hold","hold"],["Ağzından yavaşça ver","ver",8,"exhale","out"]];
-  while (running) {
-    for (const [name, kind, sec, cls, breath] of steps) {
-      if (!running) return;
-      if (audioOn && audio) audio.breath(breath);
-      const line = pick(kind);
-      for (let n = sec; n >= 1 && running; n--) { setPhase(name, line, n, cls); await wait(1000); }
-    }
+  const steps = [["Burnundan nefes al","al",4,"inhale"],["Nefesini tut","tut",4,"hold"],["Ağzından yavaşça ver","ver",8,"exhale"]];
+  while (running) for (const [name, kind, sec, cls] of steps) {
+    if (!running) return;
+    const line = pick(kind);
+    for (let n = sec; n >= 1 && running; n--) { setPhase(name, line, n, cls); await wait(1000); }
   }
 }
 document.getElementById("startBtn").onclick = async () => {
-  if (audioOn) { await ensureAudio(); audio.fade(0.22); }
+  await ensure();
   running = true;
   document.getElementById("startBtn").classList.add("hidden");
   document.getElementById("liveRow").classList.remove("hidden");
@@ -221,12 +285,10 @@ function halt(done) {
   setPhase(done ? end[Math.floor(Math.random()*end.length)] : "Hazır mısın?", done ? "Geçti. Bunu başardın." : "Kontrol sende.", "", "");
   document.getElementById("startBtn").classList.remove("hidden");
   document.getElementById("liveRow").classList.add("hidden");
-  if (audio && audioOn) audio.fade(0.05);
-  if (done) document.getElementById("after").classList.remove("hidden");
+  document.getElementById("after").classList.toggle("hidden", !done);
 }
 document.getElementById("stopBtn").onclick = () => halt(false);
 document.getElementById("doneBtn").onclick = () => halt(true);
-document.getElementById("saveBtn").onclick = () => { document.getElementById("after").classList.add("hidden"); document.getElementById("trigger").value = ""; };
 renderGrid();
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
