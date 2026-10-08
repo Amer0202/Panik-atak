@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<meta name="theme-color" content="#231c17" />
+<meta name="theme-color" content="#0b1220" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="Kaygı" />
@@ -12,42 +12,34 @@
 <link rel="icon" href="icon-192.png" />
 <link rel="apple-touch-icon" href="icon-192.png" />
 <style>
-  :root { --bg:#231c17; --ink:#f6efe6; --muted:#e4d3c0; --line:rgba(246,239,230,.16); --card:#2c241e; }
+  :root { --bg:#0b1220; --ink:#f4f7fb; --muted:#d5deea; --line:rgba(244,247,251,.14); --card:#121a2b; --green:#1fa971; }
   * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   html, body { margin:0; background:var(--bg); color:var(--ink); }
   body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; min-height:100dvh; }
-  .app { max-width:520px; margin:0 auto; padding:18px 16px 32px; }
-  header { display:flex; justify-content:space-between; align-items:center; gap:8px; }
-  button, select, input { font-family:inherit; }
+  .app { max-width:520px; margin:0 auto; padding:16px 16px 28px; }
+  header { display:flex; justify-content:space-between; align-items:center; }
+  button, textarea { font-family:inherit; }
   .link { border:0; background:transparent; color:var(--ink); font-size:16px; padding:8px 0; }
-  .pill { border:1px solid var(--line); background:#2c241e; color:var(--ink); border-radius:999px; padding:8px 12px; font-size:14px; }
-  h1 { font-size:28px; font-weight:560; letter-spacing:-.03em; margin:18px 0 8px; }
-  .stage { position:relative; height:340px; display:grid; place-items:center; }
-  .halo,.orb,.core { position:absolute; border-radius:50%; transform:scale(var(--s,.72)); transition:transform 4s linear; }
-  .halo { width:290px; height:290px; background:radial-gradient(circle, rgba(214,164,106,.22), transparent 68%); filter:blur(8px); }
-  .orb { width:214px; height:214px; background:radial-gradient(circle at 38% 32%, rgba(255,236,214,.28), transparent 28%), radial-gradient(circle at 50% 58%, rgba(214,164,106,.62), rgba(92,62,40,.2) 64%, transparent 74%); }
-  .core { width:136px; height:136px; background:radial-gradient(circle at 40% 35%, #fff6ea, #e7c39a 46%, #b88858 78%); }
-  body.inhale { --s:1; } body.hold { --s:1; } body.exhale { --s:.72; }
+  .stage { position:relative; height:360px; display:grid; place-items:center; }
+  .halo,.orb,.core { position:absolute; border-radius:50%; transform:scale(var(--s,.74)); transition:transform 4s cubic-bezier(.4,0,.2,1); }
+  .halo { width:300px; height:300px; background:radial-gradient(circle, rgba(47,168,122,.20), transparent 68%); filter:blur(10px); }
+  .orb { width:220px; height:220px; background:radial-gradient(circle at 36% 30%, rgba(255,255,255,.20), transparent 26%), radial-gradient(circle at 50% 55%, rgba(86,196,150,.55), rgba(18,42,64,.15) 62%, transparent 72%); box-shadow:0 0 40px rgba(31,169,113,.18); }
+  .core { width:128px; height:128px; background:radial-gradient(circle at 40% 34%, #f7fffb, #b7ead4 42%, #2f9a72 80%); }
+  body.inhale { --s:1; } body.hold { --s:1; } body.exhale { --s:.74; }
   body.exhale .halo, body.exhale .orb, body.exhale .core { transition-duration:8s; }
-  body.inhale .halo, body.inhale .orb, body.inhale .core { transition-duration:4s; }
   .phase { position:relative; z-index:2; text-align:center; width:min(250px,74vw); pointer-events:none; }
-  .phase b { display:block; font-size:22px; font-weight:600; }
+  .phase b { display:block; font-size:22px; font-weight:650; }
   .phase span { display:block; margin-top:8px; color:var(--ink); font-size:16px; line-height:1.35; min-height:44px; }
-  .count { margin-top:4px; font-variant-numeric:tabular-nums; font-size:28px; font-weight:560; }
-  .go,.soft { width:100%; border:0; border-radius:16px; padding:16px 18px; font-size:17px; font-weight:650; }
-  .go { background:#f3e6d4; color:#231c17; } .soft { background:#3a2e26; color:var(--ink); }
+  .count { margin-top:4px; font-variant-numeric:tabular-nums; font-size:28px; }
+  .go,.soft { width:100%; border:0; border-radius:16px; padding:16px 18px; font-size:17px; font-weight:700; }
+  .go { background:var(--green); color:#042216; } .soft { background:#182236; color:var(--ink); }
   .row { display:flex; gap:8px; margin-top:10px; } .row > * { flex:1; }
-  .soundbox { margin-top:14px; padding:12px; border:1px solid var(--line); border-radius:16px; background:var(--card); }
-  .soundbox p { margin:0 0 8px; color:var(--muted); font-size:14px; }
-  .choices { display:flex; gap:6px; flex-wrap:wrap; }
-  .choices button { border:1px solid var(--line); background:transparent; color:var(--ink); border-radius:999px; padding:8px 10px; font-size:14px; }
-  .choices button.on { background:#f3e6d4; color:#231c17; border-color:#f3e6d4; }
-  input[type=range] { width:100%; margin-top:10px; }
+  .sound { margin-top:12px; display:flex; justify-content:space-between; align-items:center; color:var(--muted); font-size:14px; }
   .card { margin-top:14px; padding:14px; border:1px solid var(--line); border-radius:18px; background:var(--card); }
   .card h2 { margin:0 0 8px; font-size:16px; }
-  label { display:block; font-size:14px; color:var(--muted); margin:10px 0 6px; }
-  input[type=text], select, textarea { width:100%; border:1px solid var(--line); background:#1b1512; color:var(--ink); border-radius:12px; padding:12px; font-size:16px; }
-  textarea { min-height:74px; }
+  h1 { font-size:28px; margin:16px 0 8px; font-weight:600; }
+  label { display:block; font-size:14px; color:var(--muted); margin:8px 0 6px; }
+  textarea { width:100%; border:1px solid var(--line); background:#0b1220; color:var(--ink); border-radius:12px; padding:12px; font-size:16px; min-height:74px; }
   .wrap { overflow-x:auto; }
   table { width:100%; border-collapse:collapse; font-size:13px; }
   th, td { border-bottom:1px solid var(--line); padding:8px 4px; text-align:center; color:var(--ink); }
@@ -55,18 +47,15 @@
   .sum { border-radius:8px; font-weight:700; }
   .note { color:var(--muted); font-size:13px; line-height:1.45; margin-top:14px; }
   .hidden { display:none !important; }
-  .modal { position:fixed; inset:0; background:rgba(20,14,10,.62); display:grid; place-items:end center; padding:16px; z-index:5; }
-  .sheet { width:min(440px,100%); background:#2c241e; border-radius:18px; padding:16px; color:var(--ink); }
+  .modal { position:fixed; inset:0; background:rgba(5,10,18,.66); display:grid; place-items:end center; padding:16px; z-index:5; }
+  .sheet { width:min(440px,100%); background:#162033; border-radius:18px; padding:16px; }
   .sheet p { line-height:1.45; margin:0 0 12px; font-size:16px; }
 </style>
 </head>
 <body>
   <div class="app">
     <section id="breath">
-      <header>
-        <button class="link" id="toTable" type="button">Tablo</button>
-        <span></span>
-      </header>
+      <header><button class="link" id="toTable" type="button">Tablo</button></header>
       <div class="stage">
         <div class="halo"></div><div class="orb"></div><div class="core"></div>
         <div class="phase">
@@ -77,29 +66,17 @@
       </div>
       <button class="go" id="startBtn" type="button">Kontrol sende</button>
       <div class="row hidden" id="liveRow">
-        <button class="soft" id="doneBtn" type="button">Rahatladım</button>
+        <button class="go" id="doneBtn" type="button">Rahatladım</button>
         <button class="soft" id="stopBtn" type="button">Durdur</button>
       </div>
       <section class="card hidden" id="after">
-        <h2 id="afterTitle">Geçti. Bunu başardın.</h2>
+        <h2>Geçti. Bunu başardın.</h2>
         <button class="go" id="noteBtn" type="button">Tabloya not ekle</button>
       </section>
-      <div class="soundbox">
-        <p>Ses kapalı başlar. Açınca alttan seviyesini yükselt.</p>
-        <div class="choices" id="sounds">
-          <button type="button" data-sound="off" class="on">Kapalı</button>
-          <button type="button" data-sound="pad">Zemin</button>
-          <button type="button" data-sound="rain">Yağmur</button>
-          <button type="button" data-sound="bowl">Kase</button>
-        </div>
-        <input id="volume" type="range" min="0" max="100" value="70" />
-      </div>
+      <div class="sound"><span>Nefes sesi</span><button class="soft" id="soundBtn" type="button" style="width:auto;padding:8px 14px">Kapalı</button></div>
     </section>
-
     <section id="table" class="hidden">
-      <header>
-        <button class="link" id="toBreath" type="button">← Nefes</button>
-      </header>
+      <header><button class="link" id="toBreath" type="button">← Nefes</button></header>
       <h1>Kaygı takibi</h1>
       <div class="card">
         <label>Bu atak için bir cümle</label>
@@ -119,9 +96,9 @@
 const SYMPTOMS = ["Kalbin teklemesi, hızlanması veya çarpıntı","Terleme, ürperme veya kızarma","Titreşim veya sarsılma","Nefes daralması, nefes almakta zorlanma","Boğulacakmış gibi hissetme","Göğüste ağrı veya daralma","Karnında kelebekler, mide bulantısı veya huzursuz mide","Baş dönmesi, sersemlik hali, denge yitimi","Kendini veya dünyayı gerçek değilmiş gibi hissetmek","Uyuşma ve karıncalanma"];
 const DAYS = ["Pzt","Sal","Çar","Per","Cum","Cmt","Paz"];
 const LINES = {
-  al: ["Burnundan al… vücudun seni koruyor.","Yavaşça nefes al… güvendesin.","Hava içeri giriyor, bedenin rahatlıyor.","Nefes al… enerji doluyor.","Derin nefes… zihnin sakinleşiyor.","İçeri çek, her şey yolunda.","Dikkatini nefesine ver, güven içindesin.","Bedenin uyarıyor, sen kontrolündesin.","Nefes al… her şey geçici.","İçeri çek, panik küçülüyor.","Her nefes seni güçlendiriyor.","Vücudun ritmini buluyor, sen de sakinleşiyorsun.","Derin nefes… bedenin uyanıyor.","Kontrol sende, panik dalgası geçiyor.","Hava doluyor, stres azalıyor."],
-  tut: ["Her şey yolunda.","Bu his geçici.","Kontrol sende, beden dengede.","Nefesini tut… sabırlı ol.","Dur, hisset ve sakinleş.","Bedenin rahat, zihin huzurlu.","Bir an dur… hislerini izle.","Panik geçiyor, sen güçlüsün.","Sakin ol… nefesini hisset.","Dikkatini topla, beden dengede.","Zihnini gözlemle, her şey normal.","Durakla… kontrol sende.","Sabırlı ol… dalgalar geçici.","Bedenin sana güven veriyor.","Hisset ve kabul et, panik azalıyor."],
-  ver: ["Ağzından ver… yük azalıyor.","Nefesi bırak… kalbin sakinleşiyor.","Bırak gitsin… dalga sönüyor.","Nefes ver… gevşe ve rahatla.","Dışarı bırak, huzuru hisset.","Bırak gitsin… tüm stres uzaklaşıyor.","Panik dağılıyor, sen güçlüsün.","Stres akıyor, beden hafifliyor.","Rahatla… her nefesle sakinleş.","Yavaşça ver… kontrol sende.","Her nefesle huzur artıyor.","Bırak, bırak… kaygı azalıyor.","Stres uzaklaşıyor, sen güven içindesin.","Nefesini bırak, panik küçülüyor.","Huzur dol… her nefesle gevşe."]
+  al:["Burnundan al… vücudun seni koruyor.","Yavaşça nefes al… güvendesin.","Hava içeri giriyor, bedenin rahatlıyor.","Nefes al… enerji doluyor.","Derin nefes… zihnin sakinleşiyor.","İçeri çek, her şey yolunda.","Dikkatini nefesine ver, güven içindesin.","Bedenin uyarıyor, sen kontrolündesin.","Nefes al… her şey geçici.","İçeri çek, panik küçülüyor.","Her nefes seni güçlendiriyor.","Vücudun ritmini buluyor, sen de sakinleşiyorsun.","Derin nefes… bedenin uyanıyor.","Kontrol sende, panik dalgası geçiyor.","Hava doluyor, stres azalıyor."],
+  tut:["Her şey yolunda.","Bu his geçici.","Kontrol sende, beden dengede.","Nefesini tut… sabırlı ol.","Dur, hisset ve sakinleş.","Bedenin rahat, zihin huzurlu.","Bir an dur… hislerini izle.","Panik geçiyor, sen güçlüsün.","Sakin ol… nefesini hisset.","Dikkatini topla, beden dengede.","Zihnini gözlemle, her şey normal.","Durakla… kontrol sende.","Sabırlı ol… dalgalar geçici.","Bedenin sana güven veriyor.","Hisset ve kabul et, panik azalıyor."],
+  ver:["Ağzından ver… yük azalıyor.","Nefesi bırak… kalbin sakinleşiyor.","Bırak gitsin… dalga sönüyor.","Nefes ver… gevşe ve rahatla.","Dışarı bırak, huzuru hisset.","Bırak gitsin… tüm stres uzaklaşıyor.","Panik dağılıyor, sen güçlüsün.","Stres akıyor, beden hafifliyor.","Rahatla… her nefesle sakinleş.","Yavaşça ver… kontrol sende.","Her nefesle huzur artıyor.","Bırak, bırak… kaygı azalıyor.","Stres uzaklaşıyor, sen güven içindesin.","Nefesini bırak, panik küçülüyor.","Huzur dol… her nefesle gevşe."]
 };
 const KEY = "kaygi-v5";
 let state = {};
@@ -132,163 +109,119 @@ if (!state.grid) {
   state.grid = Array.isArray(old) && old.length === 10 ? old : SYMPTOMS.map(() => Array(7).fill(0));
 }
 if (!state.notes) state.notes = [];
-function persist() { localStorage.setItem(KEY, JSON.stringify(state)); localStorage.setItem("puanlar", JSON.stringify(state.grid)); }
-function advice(total) {
-  if (total <= 2) return "Harika! Çok az kaygı belirtisi. Ev içinde kısa yürüyüş yapabilirsin, nefes egzersizine devam et.";
-  if (total <= 6) return "Birkaç kaygı belirtisi gözlemledin. Nefes egzersizine devam et ve sakin aktiviteler yap.";
-  if (total <= 10) return "Hafif düzeyde fiziksel kaygı var. Ev içinde kısa yürüyüş iyi gelir. Derin nefes ve farkındalık egzersizleri yap.";
-  if (total <= 20) return "Orta düzeyde kaygı. Bedenini dinle, nefes egzersizleri ve hafif ev içi egzersizler yap. Kaygı normal, panik geçici.";
-  if (total <= 30) return "Şiddetli fiziksel kaygı. Yavaşça otur, derin nefes al-ver yap. Ev içi hareketlerle rahatlamayı dene. Her şey geçici. Kalbin hızlı atıyor, bu atakta sık görülen bir tepki.";
+function persist(){ localStorage.setItem(KEY, JSON.stringify(state)); localStorage.setItem("puanlar", JSON.stringify(state.grid)); }
+function advice(total){
+  if (total<=2) return "Harika! Çok az kaygı belirtisi. Ev içinde kısa yürüyüş yapabilirsin, nefes egzersizine devam et.";
+  if (total<=6) return "Birkaç kaygı belirtisi gözlemledin. Nefes egzersizine devam et ve sakin aktiviteler yap.";
+  if (total<=10) return "Hafif düzeyde fiziksel kaygı var. Ev içinde kısa yürüyüş iyi gelir. Derin nefes ve farkındalık egzersizleri yap.";
+  if (total<=20) return "Orta düzeyde kaygı. Bedenini dinle, nefes egzersizleri ve hafif ev içi egzersizler yap. Kaygı normal, panik geçici.";
+  if (total<=30) return "Şiddetli fiziksel kaygı. Yavaşça otur, derin nefes al-ver yap. Ev içi hareketlerle rahatlamayı dene. Her şey geçici. Kalbin hızlı atıyor, bu atakta sık görülen bir tepki.";
   return "Yoğun bir gün. Kendine zaman ayır, sakin bir ortamda dinlen. Nefes ve farkındalık egzersizleri yap. Bu dalga da geçecek.";
 }
-function color(total) {
-  if (total <= 2) return ["#c9e6c2","#231c17"];
-  if (total <= 6) return ["#e7efb8","#231c17"];
-  if (total <= 10) return ["#f3e0a2","#231c17"];
-  if (total <= 20) return ["#e7b48a","#231c17"];
-  if (total <= 30) return ["#d9897a","#231c17"];
-  return ["#b85b52","#f6efe6"];
+function color(total){
+  if (total<=2) return ["#1fa971","#042216"];
+  if (total<=6) return ["#8fd18a","#042216"];
+  if (total<=10) return ["#f3e0a2","#1b2433"];
+  if (total<=20) return ["#e7b48a","#1b2433"];
+  if (total<=30) return ["#e08b7a","#1b2433"];
+  return ["#c45b52","#f4f7fb"];
 }
-function renderGrid() {
-  const totals = DAYS.map((_, c) => state.grid.reduce((a,row) => a + row[c], 0));
-  let html = "<tr><th>Belirti</th>" + DAYS.map(d => `<th>${d}</th>`).join("") + "</tr>";
-  SYMPTOMS.forEach((name, r) => {
-    html += `<tr><td>${name}</td>` + state.grid[r].map((n,c) => `<td data-r="${r}" data-c="${c}">${n}</td>`).join("") + "</tr>";
-  });
-  html += "<tr><td>Toplam</td>" + totals.map((n,c) => {
-    const [bg,fg] = color(n);
-    return `<td class="sum" data-day="${c}" style="background:${bg};color:${fg}">${n}</td>`;
-  }).join("") + "</tr>";
+function renderGrid(){
+  const totals = DAYS.map((_,c)=>state.grid.reduce((a,row)=>a+row[c],0));
+  let html = "<tr><th>Belirti</th>"+DAYS.map(d=>`<th>${d}</th>`).join("")+"</tr>";
+  SYMPTOMS.forEach((name,r)=>{ html += `<tr><td>${name}</td>`+state.grid[r].map((n,c)=>`<td data-r="${r}" data-c="${c}">${n}</td>`).join("")+"</tr>"; });
+  html += "<tr><td>Toplam</td>"+totals.map((n,c)=>{ const [bg,fg]=color(n); return `<td class="sum" data-day="${c}" style="background:${bg};color:${fg}">${n}</td>`; }).join("")+"</tr>";
   document.getElementById("grid").innerHTML = html;
 }
-document.getElementById("grid").onclick = (e) => {
-  const cell = e.target.closest("[data-r]");
-  const day = e.target.closest("[data-day]");
-  if (cell) {
-    state.grid[+cell.dataset.r][+cell.dataset.c] = (state.grid[+cell.dataset.r][+cell.dataset.c] + 1) % 5;
-    persist(); renderGrid();
-  } else if (day) {
-    const total = state.grid.reduce((a,row) => a + row[+day.dataset.day], 0);
-    document.getElementById("modalText").textContent = advice(total);
-    document.getElementById("modal").classList.remove("hidden");
-  }
+document.getElementById("grid").onclick = (e)=>{
+  const cell = e.target.closest("[data-r]"), day = e.target.closest("[data-day]");
+  if (cell){ state.grid[+cell.dataset.r][+cell.dataset.c] = (state.grid[+cell.dataset.r][+cell.dataset.c]+1)%5; persist(); renderGrid(); }
+  else if (day){ document.getElementById("modalText").textContent = advice(state.grid.reduce((a,row)=>a+row[+day.dataset.day],0)); document.getElementById("modal").classList.remove("hidden"); }
 };
-document.getElementById("modalClose").onclick = () => document.getElementById("modal").classList.add("hidden");
-document.getElementById("toTable").onclick = () => show("table");
-document.getElementById("toBreath").onclick = () => show("breath");
-document.getElementById("noteBtn").onclick = () => show("table");
-function show(which) {
-  document.getElementById("breath").classList.toggle("hidden", which !== "breath");
-  document.getElementById("table").classList.toggle("hidden", which !== "table");
-}
-document.getElementById("saveNote").onclick = () => {
+document.getElementById("modalClose").onclick = ()=>document.getElementById("modal").classList.add("hidden");
+function show(which){ document.getElementById("breath").classList.toggle("hidden", which!=="breath"); document.getElementById("table").classList.toggle("hidden", which!=="table"); }
+document.getElementById("toTable").onclick = ()=>show("table");
+document.getElementById("toBreath").onclick = ()=>show("breath");
+document.getElementById("noteBtn").onclick = ()=>show("table");
+document.getElementById("saveNote").onclick = ()=>{
   const text = document.getElementById("journal").value.trim();
-  if (text) state.notes.push({ t: Date.now(), text });
-  persist();
-  document.getElementById("journal").value = "";
+  if (text) state.notes.push({t:Date.now(), text});
+  persist(); document.getElementById("journal").value = "";
   document.getElementById("saved").textContent = text ? "Kaydedildi. Bu telefonda durur." : "Boş not kaydedilmedi.";
 };
-let running = false, timer = null, last = {al:"",tut:"",ver:""}, sound = "off", audio = null;
-function pick(kind) {
-  let line = last[kind];
-  while (line === last[kind]) line = LINES[kind][Math.floor(Math.random()*LINES[kind].length)];
-  last[kind] = line; return line;
-}
-function setPhase(name, hint, n, cls) {
-  document.body.classList.remove("inhale","hold","exhale");
-  if (cls) document.body.classList.add(cls);
-  document.getElementById("phaseLabel").textContent = name;
-  document.getElementById("phaseHint").textContent = hint;
-  document.getElementById("count").textContent = n || "";
-}
-class Bed {
-  constructor() {
+let running=false, timer=null, last={al:"",tut:"",ver:""}, audioOn=false, audio=null;
+function pick(kind){ let line=last[kind]; while(line===last[kind]) line=LINES[kind][Math.floor(Math.random()*LINES[kind].length)]; last[kind]=line; return line; }
+function setPhase(name,hint,n,cls){ document.body.classList.remove("inhale","hold","exhale"); if(cls) document.body.classList.add(cls); document.getElementById("phaseLabel").textContent=name; document.getElementById("phaseHint").textContent=hint; document.getElementById("count").textContent=n||""; }
+class Breath {
+  constructor(){
     const AC = window.AudioContext || window.webkitAudioContext;
     this.ctx = new AC();
     this.master = this.ctx.createGain();
     this.master.gain.value = 0.0001;
-    this.master.connect(this.ctx.destination);
-    this.pad = this.ctx.createGain(); this.rain = this.ctx.createGain(); this.bowl = this.ctx.createGain();
-    this.pad.gain.value = 0; this.rain.gain.value = 0; this.bowl.gain.value = 0;
-    this.pad.connect(this.master); this.rain.connect(this.master); this.bowl.connect(this.master);
-    [[98,.5],[146.8,.32],[196,.22],[293.7,.12]].forEach(([f,g],i) => {
-      const o = this.ctx.createOscillator(), gain = this.ctx.createGain(), filter = this.ctx.createBiquadFilter();
-      o.type = i === 3 ? "triangle" : "sine"; o.frequency.value = f;
-      filter.type = "lowpass"; filter.frequency.value = 900; gain.gain.value = g;
-      o.connect(filter); filter.connect(gain); gain.connect(this.pad); o.start();
-    });
-    const noise = this.ctx.createBufferSource();
-    const buffer = this.ctx.createBuffer(1, this.ctx.sampleRate * 2, this.ctx.sampleRate);
+    this.filter = this.ctx.createBiquadFilter();
+    this.filter.type = "lowpass";
+    this.filter.frequency.value = 240;
+    this.filter.Q.value = 0.4;
+    const n = this.ctx.sampleRate * 4;
+    const buffer = this.ctx.createBuffer(1, n, this.ctx.sampleRate);
     const data = buffer.getChannelData(0);
-    for (let i = 0; i < data.length; i++) data[i] = Math.random()*2-1;
-    noise.buffer = buffer; noise.loop = true;
-    const nf = this.ctx.createBiquadFilter(); nf.type = "bandpass"; nf.frequency.value = 1200; nf.Q.value = .4;
-    noise.connect(nf); nf.connect(this.rain); noise.start();
-    this.bowlOsc = this.ctx.createOscillator();
-    this.bowlGain = this.ctx.createGain();
-    this.bowlOsc.type = "sine"; this.bowlOsc.frequency.value = 246.9; this.bowlGain.gain.value = 0;
-    this.bowlOsc.connect(this.bowlGain); this.bowlGain.connect(this.bowl); this.bowlOsc.start();
-    this.tick = setInterval(() => this.strike(), 7000);
+    let last = 0;
+    for (let i=0;i<n;i++){ const white=Math.random()*2-1; last = last*0.985 + white*0.015; data[i]=last*8; }
+    this.src = this.ctx.createBufferSource();
+    this.src.buffer = buffer; this.src.loop = true;
+    this.src.connect(this.filter); this.filter.connect(this.master); this.master.connect(this.ctx.destination); this.src.start();
   }
-  async resume() { if (this.ctx.state === "suspended") await this.ctx.resume(); }
-  level() { return Math.max(0.02, document.getElementById("volume").value / 100); }
-  async set(mode) {
-    await this.resume();
+  async resume(){ if (this.ctx.state==="suspended") await this.ctx.resume(); }
+  set(mode){
     const now = this.ctx.currentTime;
-    const v = this.level();
+    const vol = audioOn ? 0.55 : 0.0001;
     this.master.gain.cancelScheduledValues(now);
-    this.master.gain.setValueAtTime(this.master.gain.value, now);
-    this.master.gain.linearRampToValueAtTime(mode === "off" ? 0.0001 : v, now + .4);
-    [["pad", this.pad],["rain", this.rain],["bowl", this.bowl]].forEach(([name, node]) => {
-      node.gain.cancelScheduledValues(now);
-      node.gain.setValueAtTime(node.gain.value, now);
-      node.gain.linearRampToValueAtTime(name === mode ? 1 : 0, now + .4);
-    });
-  }
-  strike() {
-    if (sound !== "bowl") return;
-    const now = this.ctx.currentTime;
-    this.bowlGain.gain.cancelScheduledValues(now);
-    this.bowlGain.gain.setValueAtTime(0.0001, now);
-    this.bowlGain.gain.exponentialRampToValueAtTime(0.8, now + .04);
-    this.bowlGain.gain.exponentialRampToValueAtTime(0.0001, now + 4.5);
+    this.master.gain.setValueAtTime(Math.max(this.master.gain.value, 0.0001), now);
+    this.filter.frequency.cancelScheduledValues(now);
+    this.filter.frequency.setValueAtTime(this.filter.frequency.value, now);
+    if (mode==="in"){ this.master.gain.linearRampToValueAtTime(vol, now+3.6); this.filter.frequency.linearRampToValueAtTime(520, now+3.6); }
+    else if (mode==="out"){ this.master.gain.linearRampToValueAtTime(vol*0.45, now+7.4); this.filter.frequency.linearRampToValueAtTime(180, now+7.4); }
+    else if (mode==="hold"){ this.master.gain.linearRampToValueAtTime(vol*0.22, now+1.2); }
+    else this.master.gain.linearRampToValueAtTime(0.0001, now+0.4);
   }
 }
-async function ensure() { if (!audio) audio = new Bed(); await audio.resume(); if (sound !== "off") audio.set(sound); }
-document.getElementById("sounds").onclick = async (e) => {
-  const btn = e.target.closest("[data-sound]"); if (!btn) return;
-  sound = btn.dataset.sound;
-  document.querySelectorAll("#sounds button").forEach(b => b.classList.toggle("on", b === btn));
-  await ensure(); audio.set(sound); if (sound === "bowl") audio.strike();
+async function ensure(){ if(!audio) audio=new Breath(); await audio.resume(); }
+document.getElementById("soundBtn").onclick = async ()=>{
+  audioOn = !audioOn;
+  document.getElementById("soundBtn").textContent = audioOn ? "Açık" : "Kapalı";
+  document.getElementById("soundBtn").style.background = audioOn ? "#1fa971" : "#182236";
+  document.getElementById("soundBtn").style.color = audioOn ? "#042216" : "#f4f7fb";
+  if (audioOn){ await ensure(); audio.set(running ? "in" : "hold"); } else if (audio) audio.set("off");
 };
-document.getElementById("volume").oninput = () => { if (audio && sound !== "off") audio.set(sound); };
-function wait(ms) { return new Promise(r => timer = setTimeout(r, ms)); }
-async function cycle() {
-  const steps = [["Burnundan nefes al","al",4,"inhale"],["Nefesini tut","tut",4,"hold"],["Ağzından yavaşça ver","ver",8,"exhale"]];
-  while (running) for (const [name, kind, sec, cls] of steps) {
-    if (!running) return;
+function wait(ms){ return new Promise(r=>timer=setTimeout(r,ms)); }
+async function cycle(){
+  const steps=[["Burnundan nefes al","al",4,"inhale","in"],["Nefesini tut","tut",4,"hold","hold"],["Ağzından yavaşça ver","ver",8,"exhale","out"]];
+  while(running) for (const [name,kind,sec,cls,breath] of steps){
+    if(!running) return;
+    if (audioOn && audio) audio.set(breath);
     const line = pick(kind);
-    for (let n = sec; n >= 1 && running; n--) { setPhase(name, line, n, cls); await wait(1000); }
+    for(let n=sec;n>=1 && running;n--){ setPhase(name,line,n,cls); await wait(1000); }
   }
 }
-document.getElementById("startBtn").onclick = async () => {
-  await ensure();
+document.getElementById("startBtn").onclick = async ()=>{
+  if (audioOn) await ensure();
   running = true;
   document.getElementById("startBtn").classList.add("hidden");
   document.getElementById("liveRow").classList.remove("hidden");
   document.getElementById("after").classList.add("hidden");
   cycle();
 };
-function halt(done) {
-  running = false; clearTimeout(timer);
-  const end = ["Sakinledik…","Her zamanki gibi geçti…","Zararsız bir şekilde geçti…"];
-  setPhase(done ? end[Math.floor(Math.random()*end.length)] : "Hazır mısın?", done ? "Geçti. Bunu başardın." : "Kontrol sende.", "", "");
+function halt(done){
+  running=false; clearTimeout(timer);
+  const end=["Sakinledik…","Her zamanki gibi geçti…","Zararsız bir şekilde geçti…"];
+  setPhase(done?end[Math.floor(Math.random()*end.length)]:"Hazır mısın?", done?"Geçti. Bunu başardın.":"Kontrol sende.", "", "");
   document.getElementById("startBtn").classList.remove("hidden");
   document.getElementById("liveRow").classList.add("hidden");
   document.getElementById("after").classList.toggle("hidden", !done);
+  if (audio) audio.set("off");
 }
-document.getElementById("stopBtn").onclick = () => halt(false);
-document.getElementById("doneBtn").onclick = () => halt(true);
+document.getElementById("stopBtn").onclick=()=>halt(false);
+document.getElementById("doneBtn").onclick=()=>halt(true);
 renderGrid();
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
