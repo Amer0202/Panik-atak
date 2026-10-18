@@ -43,6 +43,11 @@
   th:first-child, td:first-child { text-align:left; min-width:150px; }
   .sum { border-radius:8px; font-weight:700; }
   .note { color:var(--muted); font-size:13px; line-height:1.45; margin-top:14px; }
+  .steps { display:flex; gap:8px; margin:18px 0 8px; }
+  .steps span { flex:1; height:6px; border-radius:99px; background:#182236; }
+  .steps span.on { background:var(--green); }
+  .big { font-size:64px; font-weight:650; text-align:center; margin:12px 0 0; line-height:1; }
+  .sub { text-align:center; color:var(--muted); margin:8px 0 18px; font-size:16px; }
   .hidden { display:none !important; }
   .modal { position:fixed; inset:0; background:rgba(5,10,18,.66); display:grid; place-items:end center; padding:16px; z-index:5; }
   .sheet { width:min(440px,100%); background:#162033; border-radius:18px; padding:16px; }
@@ -70,7 +75,17 @@
         <h2>Geçti. Bunu başardın.</h2>
         <button class="go" id="noteBtn" type="button">Tabloya not ekle</button>
       </section>
-          </section>
+      <button class="soft" id="toGround" type="button" style="margin-top:10px">5-4-3-2-1</button>
+    </section>
+    <section id="ground" class="hidden">
+      <header><button class="link" id="groundBack" type="button">← Nefes</button></header>
+      <div class="steps" id="stepDots"></div>
+      <div class="big" id="gNum">5</div>
+      <h1 id="gTitle" style="text-align:center;margin-top:4px">Gör</h1>
+      <p class="sub" id="gHint"></p>
+      <button class="go" id="gTap" type="button">Bunu saydım</button>
+      <button class="soft" id="gSkip" type="button" style="margin-top:10px">Geç</button>
+    </section>
     <section id="table" class="hidden">
       <header><button class="link" id="toBreath" type="button">← Nefes</button></header>
       <h1>Kaygı takibi</h1>
@@ -135,10 +150,58 @@ document.getElementById("grid").onclick = (e)=>{
   else if (day){ document.getElementById("modalText").textContent = advice(state.grid.reduce((a,row)=>a+row[+day.dataset.day],0)); document.getElementById("modal").classList.remove("hidden"); }
 };
 document.getElementById("modalClose").onclick = ()=>document.getElementById("modal").classList.add("hidden");
-function show(which){ document.getElementById("breath").classList.toggle("hidden", which!=="breath"); document.getElementById("table").classList.toggle("hidden", which!=="table"); }
+function show(which){
+  document.getElementById("breath").classList.toggle("hidden", which!=="breath");
+  document.getElementById("table").classList.toggle("hidden", which!=="table");
+  document.getElementById("ground").classList.toggle("hidden", which!=="ground");
+}
 document.getElementById("toTable").onclick = ()=>show("table");
 document.getElementById("toBreath").onclick = ()=>show("breath");
 document.getElementById("noteBtn").onclick = ()=>show("table");
+document.getElementById("toGround").onclick = ()=>{ resetGround(); show("ground"); };
+document.getElementById("groundBack").onclick = ()=>show("breath");
+const GROUND = [
+  { n:5, title:"Gör", hint:"Etrafında gördüğün 5 şey. Duvar, telefon, ışık. Sayman yeter." },
+  { n:4, title:"Dokun", hint:"Dokunabileceğin 4 şey. Masa, kumaş, telefon, kendi elin." },
+  { n:3, title:"Duy", hint:"Duyduğun 3 ses. Klima, dışarı, kendi nefesin. Sessizse nefes sayılır." },
+  { n:2, title:"Kokla", hint:"Koku alabildiğin 2 şey. Yoksa burnunu iki kez çekmen yeter." },
+  { n:1, title:"Tat", hint:"Ağzındaki tat. Su, diş macunu veya hiçbir şey. Hiçbir şey de cevap." }
+];
+let gStep = 0, gCount = 0, gDone = false;
+function resetGround(){ gStep = 0; gCount = 0; gDone = false; renderGround(); }
+function renderGround(){
+  if (gDone){
+    document.getElementById("gNum").textContent = "";
+    document.getElementById("gTitle").textContent = "Buradasın.";
+    document.getElementById("gHint").textContent = "Dalga geçiyor. İstediğin anda nefese dön.";
+    document.getElementById("gTap").textContent = "Nefese dön";
+    document.getElementById("stepDots").innerHTML = GROUND.map(()=>`<span class="on"></span>`).join("");
+    return;
+  }
+  const step = GROUND[gStep];
+  document.getElementById("gNum").textContent = step.n - gCount;
+  document.getElementById("gTitle").textContent = step.title;
+  document.getElementById("gHint").textContent = step.hint;
+  document.getElementById("gTap").textContent = "Bunu saydım";
+  document.getElementById("stepDots").innerHTML = GROUND.map((_,i)=>`<span class="${i<=gStep?"on":""}"></span>`).join("");
+}
+document.getElementById("gTap").onclick = ()=>{
+  if (gDone){ show("breath"); return; }
+  const step = GROUND[gStep];
+  gCount++;
+  if (gCount >= step.n){
+    gStep++;
+    gCount = 0;
+    if (gStep >= GROUND.length){ gDone = true; }
+  }
+  renderGround();
+};
+document.getElementById("gSkip").onclick = ()=>{
+  if (gDone){ show("breath"); return; }
+  gStep++; gCount = 0;
+  if (gStep >= GROUND.length){ gDone = true; }
+  renderGround();
+};
 document.getElementById("saveNote").onclick = ()=>{
   const text = document.getElementById("journal").value.trim();
   if (text) state.notes.push({t:Date.now(), text});
