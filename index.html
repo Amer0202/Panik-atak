@@ -12,54 +12,93 @@
 <link rel="icon" href="icon-192.png" />
 <link rel="apple-touch-icon" href="icon-192.png" />
 <style>
-  :root { --bg:#0b1220; --ink:#f4f7fb; --muted:#d5deea; --line:rgba(244,247,251,.14); --card:#121a2b; --green:#1fa971; }
+  :root { --bg:#0b1220; --ink:#f7fafc; --muted:#c9d4e3; --line:rgba(247,250,252,.12); --card:#141c2e; --green:#1fa971; --green-d:#14875a; }
   * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   html, body { margin:0; background:var(--bg); color:var(--ink); }
-  body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; min-height:100dvh; }
-  .app { max-width:520px; margin:0 auto; padding:16px 16px 28px; }
-  header { display:flex; justify-content:space-between; align-items:center; }
+  body {
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    min-height:100dvh;
+    background:
+      radial-gradient(700px 420px at 50% -8%, rgba(31,169,113,.16), transparent 62%),
+      var(--bg);
+  }
+  .app { max-width:480px; margin:0 auto; padding:max(18px, env(safe-area-inset-top)) 18px 32px; }
+  header { display:flex; justify-content:space-between; align-items:center; min-height:36px; }
+  .brand { font-size:13px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted); font-weight:650; }
   button, textarea { font-family:inherit; }
-  .link { border:0; background:transparent; color:var(--ink); font-size:16px; padding:8px 0; }
-  .stage { height:280px; display:grid; place-items:center; }
-  .orb { width:210px; height:210px; border-radius:50%; background:#1fa971; transform:scale(var(--s,.74)); transition:transform 4s cubic-bezier(.4,0,.2,1); box-shadow:0 0 0 18px rgba(31,169,113,.18); }
-  body.inhale { --s:1; } body.hold { --s:1; } body.exhale { --s:.74; }
+  .link { border:0; background:transparent; color:var(--ink); font-size:15px; padding:8px 0; font-weight:600; }
+  .stage { height:280px; display:grid; place-items:center; margin-top:6px; }
+  .ring {
+    width:260px; height:260px; border-radius:50%; display:grid; place-items:center;
+    background:radial-gradient(circle, rgba(61,202,160,.22) 0%, rgba(31,169,113,.08) 42%, transparent 70%);
+  }
+  .orb {
+    position:relative; width:180px; height:180px; border-radius:50%;
+    background:
+      radial-gradient(circle at 32% 26%, rgba(255,255,255,.5), rgba(255,255,255,0) 20%),
+      radial-gradient(circle at 70% 80%, rgba(6,36,24,.5), transparent 38%),
+      radial-gradient(circle at 48% 46%, #49d0a4 0%, #1fa971 38%, #127a50 68%, #0b4d33 100%);
+    transform:scale(var(--s,.78));
+    transition:transform 4s cubic-bezier(.45,0,.2,1);
+    box-shadow:
+      inset 0 -30px 38px rgba(4,28,18,.45),
+      inset 16px 18px 24px rgba(255,255,255,.18),
+      0 28px 46px rgba(0,0,0,.4),
+      0 0 52px rgba(31,169,113,.24);
+  }
+  .orb:before {
+    content:""; position:absolute; inset:8%; border-radius:50%;
+    background:radial-gradient(circle at 36% 30%, rgba(255,255,255,.2), transparent 36%);
+    pointer-events:none;
+  }
+  .orb:after {
+    content:""; position:absolute; left:20%; top:12%; width:32%; height:15%;
+    border-radius:50%; background:rgba(255,255,255,.32); filter:blur(8px);
+    pointer-events:none;
+  }
+  body.inhale { --s:1; } body.hold { --s:1; } body.exhale { --s:.78; }
   body.exhale .orb { transition-duration:8s; }
-  .phase { text-align:center; margin:8px 0 16px; }
-  .phase b { display:block; font-size:22px; font-weight:650; }
-  .phase span { display:block; margin-top:8px; color:var(--ink); font-size:16px; line-height:1.35; min-height:44px; }
-  .count { margin-top:4px; font-variant-numeric:tabular-nums; font-size:28px; }
-  .go,.soft { width:100%; border:0; border-radius:16px; padding:16px 18px; font-size:17px; font-weight:700; }
-  .go { background:var(--green); color:#042216; } .soft { background:#182236; color:var(--ink); }
+  .phase { text-align:center; margin:6px 0 18px; min-height:108px; }
+  .phase b { display:block; font-size:24px; font-weight:650; letter-spacing:-.02em; }
+  .phase span { display:block; margin:8px auto 0; max-width:320px; color:var(--ink); font-size:16px; line-height:1.4; min-height:44px; }
+  .count { margin-top:6px; font-variant-numeric:tabular-nums; font-size:32px; font-weight:650; color:var(--green); }
+  .go,.soft { width:100%; border:0; border-radius:18px; padding:17px 18px; font-size:17px; font-weight:700; }
+  .go { background:var(--green); color:#042216; }
+  .go:active { background:var(--green-d); }
+  .soft { background:#1a2438; color:var(--ink); border:1px solid var(--line); }
   .row { display:flex; gap:8px; margin-top:10px; } .row > * { flex:1; }
-  .sound { margin-top:12px; display:flex; justify-content:space-between; align-items:center; color:var(--muted); font-size:14px; }
-  .card { margin-top:14px; padding:14px; border:1px solid var(--line); border-radius:18px; background:var(--card); }
-  .card h2 { margin:0 0 8px; font-size:16px; }
-  h1 { font-size:28px; margin:16px 0 8px; font-weight:600; }
+  .card { margin-top:16px; padding:16px; border:1px solid var(--line); border-radius:20px; background:rgba(20,28,46,.9); }
+  .card h2 { margin:0 0 10px; font-size:17px; font-weight:650; }
+  h1 { font-size:28px; margin:14px 0 8px; font-weight:650; letter-spacing:-.03em; }
   label { display:block; font-size:14px; color:var(--muted); margin:8px 0 6px; }
-  textarea { width:100%; border:1px solid var(--line); background:#0b1220; color:var(--ink); border-radius:12px; padding:12px; font-size:16px; min-height:74px; }
-  .wrap { overflow-x:auto; }
+  textarea { width:100%; border:1px solid var(--line); background:#0b1220; color:var(--ink); border-radius:14px; padding:12px; font-size:16px; min-height:80px; }
+  .wrap { overflow-x:auto; margin:0 -4px; }
   table { width:100%; border-collapse:collapse; font-size:13px; }
-  th, td { border-bottom:1px solid var(--line); padding:8px 4px; text-align:center; color:var(--ink); }
-  th:first-child, td:first-child { text-align:left; min-width:150px; }
+  th, td { border-bottom:1px solid var(--line); padding:9px 4px; text-align:center; color:var(--ink); }
+  th { color:var(--muted); font-weight:600; font-size:12px; }
+  th:first-child, td:first-child { text-align:left; min-width:148px; }
   .sum { border-radius:8px; font-weight:700; }
-  .note { color:var(--muted); font-size:13px; line-height:1.45; margin-top:14px; }
-  .steps { display:flex; gap:8px; margin:18px 0 8px; }
-  .steps span { flex:1; height:6px; border-radius:99px; background:#182236; }
+  .note { color:var(--muted); font-size:13px; line-height:1.5; margin-top:14px; }
+  .steps { display:flex; gap:6px; margin:20px 0 4px; }
+  .steps span { flex:1; height:5px; border-radius:99px; background:#1a2438; }
   .steps span.on { background:var(--green); }
-  .big { font-size:64px; font-weight:650; text-align:center; margin:12px 0 0; line-height:1; }
-  .sub { text-align:center; color:var(--muted); margin:8px 0 18px; font-size:16px; }
+  .big { font-size:72px; font-weight:650; text-align:center; margin:18px 0 0; line-height:1; color:var(--green); letter-spacing:-.04em; }
+  .sub { text-align:center; color:var(--ink); margin:10px auto 22px; font-size:16px; line-height:1.45; max-width:320px; }
   .hidden { display:none !important; }
-  .modal { position:fixed; inset:0; background:rgba(5,10,18,.66); display:grid; place-items:end center; padding:16px; z-index:5; }
-  .sheet { width:min(440px,100%); background:#162033; border-radius:18px; padding:16px; }
-  .sheet p { line-height:1.45; margin:0 0 12px; font-size:16px; }
+  .modal { position:fixed; inset:0; background:rgba(5,10,18,.7); display:grid; place-items:end center; padding:16px; z-index:5; }
+  .sheet { width:min(440px,100%); background:#162033; border:1px solid var(--line); border-radius:22px; padding:18px; }
+  .sheet p { line-height:1.5; margin:0 0 14px; font-size:16px; }
 </style>
 </head>
 <body>
   <div class="app">
     <section id="breath">
-      <header><button class="link" id="toTable" type="button">Tablo</button></header>
+      <header>
+        <span class="brand">Kaygı</span>
+        <button class="link" id="toTable" type="button">Tablo</button>
+      </header>
       <div class="stage">
-        <div class="orb"></div>
+        <div class="ring"><div class="orb"></div></div>
       </div>
       <div class="phase">
           <b id="phaseLabel">Hazır mısın?</b>
@@ -78,7 +117,10 @@
       <button class="soft" id="toGround" type="button" style="margin-top:10px">5-4-3-2-1</button>
     </section>
     <section id="ground" class="hidden">
-      <header><button class="link" id="groundBack" type="button">← Nefes</button></header>
+      <header>
+        <button class="link" id="groundBack" type="button">← Nefes</button>
+        <span class="brand">Kaygı</span>
+      </header>
       <div class="steps" id="stepDots"></div>
       <div class="big" id="gNum">5</div>
       <h1 id="gTitle" style="text-align:center;margin-top:4px">Gör</h1>
@@ -87,7 +129,10 @@
       <button class="soft" id="gSkip" type="button" style="margin-top:10px">Geç</button>
     </section>
     <section id="table" class="hidden">
-      <header><button class="link" id="toBreath" type="button">← Nefes</button></header>
+      <header>
+        <button class="link" id="toBreath" type="button">← Nefes</button>
+        <span class="brand">Kaygı</span>
+      </header>
       <h1>Kaygı takibi</h1>
       <div class="card">
         <label>Bu atak için bir cümle</label>
