@@ -28,19 +28,19 @@
   button, textarea { font-family:inherit; }
   .link { border:0; background:transparent; color:var(--ink); font-size:15px; padding:8px 0; font-weight:600; }
   .stage { height:270px; display:grid; place-items:center; margin-top:8px; }
-  .ring {
-    width:248px; height:248px; border-radius:50%; display:grid; place-items:center;
-    background:rgba(31,169,113,.10);
-  }
+  .ring { width:248px; height:248px; display:grid; place-items:center; }
   .orb {
     width:176px; height:176px; border-radius:50%;
     background:#1fa971;
-    transform:scale(var(--s,.78));
-    transition:transform 4s cubic-bezier(.45,0,.2,1);
-    box-shadow:0 16px 28px rgba(0,0,0,.28);
+    transform:scale(var(--s,.76));
+    transition:transform 4s cubic-bezier(.37,.05,.28,1);
   }
-  body.inhale { --s:1; } body.hold { --s:1; } body.exhale { --s:.78; }
-  body.exhale .orb { transition-duration:8s; }
+  body.inhale { --s:1; }
+  body.hold { --s:1; }
+  body.exhale { --s:.76; }
+  body.inhale .orb { transition:transform 4s cubic-bezier(.22,.7,.36,1); }
+  body.hold .orb { transition:none; }
+  body.exhale .orb { transition:transform 8s cubic-bezier(.4,.05,.6,1); }
   .phase { text-align:center; margin:6px 0 18px; min-height:108px; }
   .phase b { display:block; font-size:24px; font-weight:650; letter-spacing:-.02em; }
   .phase span { display:block; margin:8px auto 0; max-width:320px; color:var(--ink); font-size:16px; line-height:1.4; min-height:44px; }
