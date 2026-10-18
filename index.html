@@ -59,7 +59,13 @@
   table { width:100%; border-collapse:collapse; font-size:13px; }
   th, td { border-bottom:1px solid var(--line); padding:9px 4px; text-align:center; color:var(--ink); }
   th { color:var(--muted); font-weight:600; font-size:12px; }
-  th:first-child, td:first-child { text-align:left; min-width:148px; }
+  td.hit { font-variant-numeric:tabular-nums; font-weight:650; border-radius:8px; }
+  td.today, th.today { background:rgba(31,169,113,.16); }
+  .n0 { color:#8ea0b8; } .n1 { color:#8fd18a; } .n2 { color:#1fa971; }
+  .n3 { color:#e7b48a; } .n4 { color:#e08b7a; }
+  td.pop { animation:pop .18s ease; }
+  @keyframes pop { 50% { transform:scale(1.25); } }
+  .legend { color:var(--muted); font-size:13px; margin:0 0 8px; }
   .sum { border-radius:8px; font-weight:700; }
   .note { color:var(--muted); font-size:13px; line-height:1.5; margin-top:14px; }
   .steps { display:flex; gap:6px; margin:20px 0 4px; }
@@ -149,8 +155,9 @@
         <ul class="log" id="attackLog"></ul>
       </div>
       <div class="card">
+        <p class="legend">0 hiç · 1 az · 2 orta · 3 belirgin · 4 şiddetli</p>
         <div class="wrap"><table id="grid"></table></div>
-        <p class="note">Hücreye bas, 0’dan 4’e çıkar. Gün toplamına basınca kısa tavsiye açılır.</p>
+        <p class="note">Kısa bas, artar. Uzun bas, geri gider. Bugün işaretli. Gün toplamına basınca tavsiye açılır.</p>
       </div>
       <p class="note">Bu bir nefes ve not aracıdır, tedavi yerine geçmez. Daha önce yaşamadığın, daha şiddetli veya geçmeyen bir belirti olursa bir sağlık değerlendirmesi almaktan çekinme.</p>
     </section>
@@ -233,17 +240,47 @@ function color(total){
   if (total<=30) return ["#e08b7a","#1b2433"];
   return ["#c45b52","#f4f7fb"];
 }
+let lastCell = "";
 function renderGrid(){
+  const today = (new Date().getDay() + 6) % 7;
   const totals = DAYS.map((_,c)=>state.grid.reduce((a,row)=>a+row[c],0));
-  let html = "<tr><th>Belirti</th>"+DAYS.map(d=>`<th>${d}</th>`).join("")+"</tr>";
-  SYMPTOMS.forEach((name,r)=>{ html += `<tr><td>${name}</td>`+state.grid[r].map((n,c)=>`<td data-r="${r}" data-c="${c}">${n}</td>`).join("")+"</tr>"; });
-  html += "<tr><td>Toplam</td>"+totals.map((n,c)=>{ const [bg,fg]=color(n); return `<td class="sum" data-day="${c}" style="background:${bg};color:${fg}">${n}</td>`; }).join("")+"</tr>";
+  let html = "<tr><th>Belirti</th>"+DAYS.map((d,c)=>`<th class="${c===today?"today":""}">${d}</th>`).join("")+"</tr>";
+  SYMPTOMS.forEach((name,r)=>{
+    html += `<tr><td>${name}</td>`+state.grid[r].map((n,c)=>{
+      const key = r+"-"+c;
+      return `<td class="hit n${n} ${c===today?"today":""} ${key===lastCell?"pop":""}" data-r="${r}" data-c="${c}">${n}</td>`;
+    }).join("")+"</tr>";
+  });
+  html += "<tr><td>Toplam</td>"+totals.map((n,c)=>{ const [bg,fg]=color(n); return `<td class="sum ${c===today?"today":""}" data-day="${c}" style="background:${bg};color:${fg}">${n}</td>`; }).join("")+"</tr>";
   document.getElementById("grid").innerHTML = html;
 }
+let holdTimer = null, held = false;
+document.getElementById("grid").onpointerdown = (e)=>{
+  const cell = e.target.closest("[data-r]");
+  if (!cell) return;
+  held = false;
+  holdTimer = setTimeout(()=>{
+    held = true;
+    const r = +cell.dataset.r, c = +cell.dataset.c;
+    state.grid[r][c] = (state.grid[r][c] + 4) % 5;
+    lastCell = r+"-"+c;
+    persist(); renderGrid();
+  }, 420);
+};
+document.getElementById("grid").onpointerup = ()=>clearTimeout(holdTimer);
+document.getElementById("grid").onpointerleave = ()=>clearTimeout(holdTimer);
 document.getElementById("grid").onclick = (e)=>{
+  if (held){ held = false; return; }
   const cell = e.target.closest("[data-r]"), day = e.target.closest("[data-day]");
-  if (cell){ state.grid[+cell.dataset.r][+cell.dataset.c] = (state.grid[+cell.dataset.r][+cell.dataset.c]+1)%5; persist(); renderGrid(); }
-  else if (day){ document.getElementById("modalText").textContent = advice(state.grid.reduce((a,row)=>a+row[+day.dataset.day],0)); document.getElementById("modal").classList.remove("hidden"); }
+  if (cell){
+    const r = +cell.dataset.r, c = +cell.dataset.c;
+    state.grid[r][c] = (state.grid[r][c] + 1) % 5;
+    lastCell = r+"-"+c;
+    persist(); renderGrid();
+  } else if (day){
+    document.getElementById("modalText").textContent = advice(state.grid.reduce((a,row)=>a+row[+day.dataset.day],0));
+    document.getElementById("modal").classList.remove("hidden");
+  }
 };
 document.getElementById("modalClose").onclick = ()=>document.getElementById("modal").classList.add("hidden");
 function show(which){
