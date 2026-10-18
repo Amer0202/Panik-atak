@@ -77,6 +77,11 @@
   .sheet { width:min(440px,100%); background:#162033; border:1px solid var(--line); border-radius:22px; padding:18px; }
   .sheet p { line-height:1.5; margin:0 0 14px; font-size:16px; }
   .hidden { display:none !important; }
+  .toast {
+    position:fixed; left:50%; bottom:28px; transform:translateX(-50%);
+    background:#1fa971; color:#042216; font-weight:700;
+    padding:12px 18px; border-radius:999px; z-index:6;
+  }
 </style>
 </head>
 <body>
@@ -147,10 +152,11 @@
         <div class="wrap"><table id="grid"></table></div>
         <p class="note">Hücreye bas, 0’dan 4’e çıkar. Gün toplamına basınca kısa tavsiye açılır.</p>
       </div>
-      <p class="note">Bu bir nefes ve not aracıdır, tedavi değildir. Tehlike hissedersen 112.</p>
+      <p class="note">Bu bir nefes ve not aracıdır, tedavi yerine geçmez. Daha önce yaşamadığın, daha şiddetli veya geçmeyen bir belirti olursa bir sağlık değerlendirmesi almaktan çekinme.</p>
     </section>
   </div>
   <div class="modal hidden" id="modal"><div class="sheet"><p id="modalText"></p><button class="go" id="modalClose" type="button">Kapat</button></div></div>
+  <div class="toast hidden" id="toast">Kaydedildi.</div>
 <script>
 const SYMPTOMS = ["Kalbin teklemesi, hızlanması veya çarpıntı","Terleme, ürperme veya kızarma","Titreşim veya sarsılma","Nefes daralması, nefes almakta zorlanma","Boğulacakmış gibi hissetme","Göğüste ağrı veya daralma","Karnında kelebekler, mide bulantısı veya huzursuz mide","Baş dönmesi, sersemlik hali, denge yitimi","Kendini veya dünyayı gerçek değilmiş gibi hissetmek","Uyuşma ve karıncalanma"];
 const DAYS = ["Pzt","Sal","Çar","Per","Cum","Cmt","Paz"];
@@ -206,6 +212,9 @@ document.getElementById("saveAttack").onclick = ()=>{
   document.getElementById("after").classList.add("hidden");
   renderAttacks();
   show("table");
+  const toast = document.getElementById("toast");
+  toast.classList.remove("hidden");
+  setTimeout(() => toast.classList.add("hidden"), 1400);
 };
 renderAttacks();
 function advice(total){
