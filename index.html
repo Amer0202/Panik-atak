@@ -67,7 +67,12 @@
   .steps span.on { background:var(--green); }
   .big { font-size:72px; font-weight:650; text-align:center; margin:18px 0 0; line-height:1; color:var(--green); letter-spacing:-.04em; }
   .sub { text-align:center; color:var(--ink); margin:10px auto 22px; font-size:16px; line-height:1.45; max-width:320px; }
-  .hidden { display:none !important; }
+  .chips { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+  .chips button { border:1px solid var(--line); background:#1a2438; color:var(--ink); border-radius:999px; padding:8px 12px; font-size:14px; font-weight:600; }
+  .chips button.on { background:var(--green); color:#042216; border-color:var(--green); }
+  .scale { display:flex; justify-content:space-between; color:var(--muted); font-size:13px; margin-top:4px; }
+  .log { margin:0; padding:0; list-style:none; }
+  .log li { padding:10px 0; border-bottom:1px solid var(--line); font-size:14px; line-height:1.4; }
   .modal { position:fixed; inset:0; background:rgba(5,10,18,.7); display:grid; place-items:end center; padding:16px; z-index:5; }
   .sheet { width:min(440px,100%); background:#162033; border:1px solid var(--line); border-radius:22px; padding:18px; }
   .sheet p { line-height:1.5; margin:0 0 14px; font-size:16px; }
@@ -95,7 +100,22 @@
       </div>
       <section class="card hidden" id="after">
         <h2>Geçti. Bunu başardın.</h2>
-        <button class="go" id="noteBtn" type="button">Tabloya not ekle</button>
+        <label>Yoğunluk, 0 hiç yok, 10 en sert</label>
+        <input id="intensity" type="range" min="0" max="10" value="5" />
+        <div class="scale"><span>0</span><span id="intensityVal">5</span><span>10</span></div>
+        <label>Tetikleyici, varsa</label>
+        <div class="chips" id="triggers">
+          <button type="button" data-trigger="Kalabalık">Kalabalık</button>
+          <button type="button" data-trigger="Kapalı alan">Kapalı alan</button>
+          <button type="button" data-trigger="Yalnız kalmak">Yalnız kalmak</button>
+          <button type="button" data-trigger="Beden hissi">Beden hissi</button>
+          <button type="button" data-trigger="Uykusuzluk">Uykusuzluk</button>
+          <button type="button" data-trigger="Haber veya telefon">Haber veya telefon</button>
+          <button type="button" data-trigger="Bilmiyorum">Bilmiyorum</button>
+        </div>
+        <label>Bir cümle, isteğe bağlı</label>
+        <textarea id="attackNote" placeholder="istersen bir cümle"></textarea>
+        <button class="go" id="saveAttack" type="button" style="margin-top:12px">Kaydet</button>
       </section>
       <button class="soft" id="toGround" type="button" style="margin-top:10px">5-4-3-2-1</button>
     </section>
@@ -118,10 +138,9 @@
       </header>
       <h1>Kaygı takibi</h1>
       <div class="card">
-        <label>Bu atak için bir cümle</label>
-        <textarea id="journal" placeholder="istersen bir cümle"></textarea>
-        <button class="go" id="saveNote" type="button" style="margin-top:10px">Kaydet</button>
-        <p class="note" id="saved">Kayıt sadece bu telefonda durur.</p>
+        <h2>Atak kayıtları</h2>
+        <p class="note" id="attackStats" style="margin-top:0">Henüz atak kaydı yok.</p>
+        <ul class="log" id="attackLog"></ul>
       </div>
       <div class="card">
         <div class="wrap"><table id="grid"></table></div>
@@ -135,9 +154,9 @@
 const SYMPTOMS = ["Kalbin teklemesi, hızlanması veya çarpıntı","Terleme, ürperme veya kızarma","Titreşim veya sarsılma","Nefes daralması, nefes almakta zorlanma","Boğulacakmış gibi hissetme","Göğüste ağrı veya daralma","Karnında kelebekler, mide bulantısı veya huzursuz mide","Baş dönmesi, sersemlik hali, denge yitimi","Kendini veya dünyayı gerçek değilmiş gibi hissetmek","Uyuşma ve karıncalanma"];
 const DAYS = ["Pzt","Sal","Çar","Per","Cum","Cmt","Paz"];
 const LINES = {
-  al:["Burnundan al. Vücudun seni koruyor.","Yavaşça al. Acele etme.","Hava içeri giriyor.","Dikkatini nefese ver.","Bu dalga geçici.","Kontrol sende.","İçeri çek. Panik küçülüyor.","Her nefes seni buraya getiriyor."],
-  tut:["Tut. Zorlama.","Bu his geçici.","Bir an dur.","Beden dengede.","Hisset ve kabul et.","Sabırlı ol. Dalga geçiyor.","Nefesini tut. Buradasın.","Dur. Her şey yolunda."],
-  ver:["Ağzından yavaşça ver.","Bırak gitsin.","Yük azalıyor.","Dalga sönüyor.","Gevşe.","Nefesi bırak.","Stres uzaklaşıyor.","Yavaşça ver. Kontrol sende."]
+  al:["Burnundan al… vücudun seni koruyor.","Yavaşça nefes al… güvendesin.","Hava içeri giriyor, bedenin rahatlıyor.","Derin nefes… zihnin sakinleşiyor.","İçeri çek, her şey yolunda.","Dikkatini nefesine ver, güven içindesin.","Bedenin uyarıyor, sen kontrolündesin.","Nefes al… her şey geçici.","İçeri çek, panik küçülüyor.","Her nefes seni güçlendiriyor.","Vücudun ritmini buluyor, sen de sakinleşiyorsun.","Kontrol sende, panik dalgası geçiyor.","Hava doluyor, stres azalıyor."],
+  tut:["Her şey yolunda.","Bu his geçici.","Kontrol sende, beden dengede.","Nefesini tut… sabırlı ol.","Dur, hisset ve sakinleş.","Bedenin rahat, zihin huzurlu.","Bir an dur… hislerini izle.","Panik geçiyor, sen güçlüsün.","Sakin ol… nefesini hisset.","Dikkatini topla, beden dengede.","Durakla… kontrol sende.","Sabırlı ol… dalgalar geçici.","Bedenin sana güven veriyor.","Hisset ve kabul et, panik azalıyor."],
+  ver:["Ağzından ver… yük azalıyor.","Nefesi bırak… kalbin sakinleşiyor.","Bırak gitsin… dalga sönüyor.","Nefes ver… gevşe ve rahatla.","Dışarı bırak, huzuru hisset.","Bırak gitsin… tüm stres uzaklaşıyor.","Panik dağılıyor, sen güçlüsün.","Stres akıyor, beden hafifliyor.","Rahatla… her nefesle sakinleş.","Yavaşça ver… kontrol sende.","Bırak, bırak… kaygı azalıyor.","Stres uzaklaşıyor, sen güven içindesin.","Nefesini bırak, panik küçülüyor."]
 };
 const KEY = "kaygi-v5";
 let state = {};
@@ -147,8 +166,47 @@ if (!state.grid) {
   try { old = JSON.parse(localStorage.getItem("puanlar")); } catch {}
   state.grid = Array.isArray(old) && old.length === 10 ? old : SYMPTOMS.map(() => Array(7).fill(0));
 }
-if (!state.notes) state.notes = [];
+if (!state.attacks) state.attacks = [];
 function persist(){ localStorage.setItem(KEY, JSON.stringify(state)); localStorage.setItem("puanlar", JSON.stringify(state.grid)); }
+const TRIGGERS = ["Kalabalık","Kapalı alan","Yalnız kalmak","Beden hissi","Uykusuzluk","Haber veya telefon","Bilmiyorum"];
+let pickedTrigger = "";
+document.getElementById("intensity").oninput = (e)=>{ document.getElementById("intensityVal").textContent = e.target.value; };
+document.getElementById("triggers").onclick = (e)=>{
+  const btn = e.target.closest("[data-trigger]");
+  if (!btn) return;
+  pickedTrigger = pickedTrigger === btn.dataset.trigger ? "" : btn.dataset.trigger;
+  document.querySelectorAll("#triggers button").forEach(b => b.classList.toggle("on", b.dataset.trigger === pickedTrigger));
+};
+function renderAttacks(){
+  const list = state.attacks.slice().reverse().slice(0, 8);
+  const weekAgo = Date.now() - 7*24*60*60*1000;
+  const week = state.attacks.filter(a => a.t >= weekAgo);
+  const avg = week.length ? Math.round(week.reduce((s,a)=>s+a.intensity,0) / week.length) : 0;
+  document.getElementById("attackStats").textContent = week.length
+    ? `Son 7 gün: ${week.length} atak. Ortalama yoğunluk ${avg}/10.`
+    : "Son 7 günde atak kaydı yok.";
+  document.getElementById("attackLog").innerHTML = list.map(a => {
+    const d = new Date(a.t);
+    const when = d.toLocaleDateString("tr-TR", { day:"numeric", month:"short" });
+    return `<li>${when} · ${a.intensity}/10${a.trigger ? " · " + a.trigger : ""}${a.note ? "<br>" + a.note : ""}</li>`;
+  }).join("");
+}
+document.getElementById("saveAttack").onclick = ()=>{
+  state.attacks.push({
+    t: Date.now(),
+    intensity: Number(document.getElementById("intensity").value),
+    trigger: pickedTrigger,
+    note: document.getElementById("attackNote").value.trim()
+  });
+  persist();
+  document.getElementById("attackNote").value = "";
+  pickedTrigger = "";
+  document.querySelectorAll("#triggers button").forEach(b => b.classList.remove("on"));
+  document.getElementById("after").classList.add("hidden");
+  renderAttacks();
+  show("table");
+};
+renderAttacks();
 function advice(total){
   if (total<=2) return "Harika! Çok az kaygı belirtisi. Ev içinde kısa yürüyüş yapabilirsin, nefes egzersizine devam et.";
   if (total<=6) return "Birkaç kaygı belirtisi gözlemledin. Nefes egzersizine devam et ve sakin aktiviteler yap.";
@@ -185,7 +243,6 @@ function show(which){
 }
 document.getElementById("toTable").onclick = ()=>show("table");
 document.getElementById("toBreath").onclick = ()=>show("breath");
-document.getElementById("noteBtn").onclick = ()=>show("table");
 document.getElementById("toGround").onclick = ()=>{ resetGround(); show("ground"); };
 document.getElementById("groundBack").onclick = ()=>show("breath");
 const GROUND = [
@@ -229,12 +286,6 @@ document.getElementById("gSkip").onclick = ()=>{
   gStep++; gCount = 0;
   if (gStep >= GROUND.length){ gDone = true; }
   renderGround();
-};
-document.getElementById("saveNote").onclick = ()=>{
-  const text = document.getElementById("journal").value.trim();
-  if (text) state.notes.push({t:Date.now(), text});
-  persist(); document.getElementById("journal").value = "";
-  document.getElementById("saved").textContent = text ? "Kaydedildi. Bu telefonda durur." : "Boş not kaydedilmedi.";
 };
 let running=false, timer=null, last={al:"",tut:"",ver:""};
 function pick(kind){ let line=last[kind]; while(line===last[kind]) line=LINES[kind][Math.floor(Math.random()*LINES[kind].length)]; last[kind]=line; return line; }
