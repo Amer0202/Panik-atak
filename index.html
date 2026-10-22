@@ -183,31 +183,31 @@ const LINES = {
 };
 const EN = {
   brand:"Wave",
-  symptoms:["Palpitations, pounding, or a racing heart","Sweating, chills, or flushing","Trembling or shaking","Shortness of breath, trouble getting air","A feeling of choking","Chest pain or tightness","Butterflies, nausea, or an unsettled stomach","Dizziness, light-headedness, or unsteadiness","Feeling detached from yourself, or that the world is unreal","Numbness or tingling"],
+  symptoms:["Palpitations, a pounding heart, or a racing heart","Sweating, chills, or hot flushes","Trembling or shaking","Shortness of breath, or trouble getting a full breath","A sensation of choking","Chest pain or tightness","Butterflies, nausea, or an unsettled stomach","Dizziness, light-headedness, or unsteadiness","Feeling detached from yourself, or as if the world is unreal","Numbness or tingling"],
   days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
   lines:{
-    al:["In through your nose. Your body is protecting you.","Breathe in slowly. You are safe.","Air is coming in. Your body is settling.","A deep breath. Your mind is quieting.","Draw it in. Things are all right.","Put your attention on the breath. You are safe.","Your body is alerting you. You are in charge.","Breathe in. This is temporary.","Draw it in. The panic is shrinking.","Each breath steadies you.","Your body is finding its rhythm. So are you.","You are in charge. The wave is passing.","Air is filling you. The tension is easing."],
-    tut:["Things are all right.","This feeling is temporary.","You are in charge. Your body is steady.","Hold the breath. No strain.","Pause. Notice. Settle.","Your body is calm. Your mind can follow.","Stay for a moment. Watch the feeling.","The panic is passing. You can stay with it.","Be still. Feel the breath.","Gather your attention. Your body is steady.","Pause. You are in charge.","Be patient. Waves pass.","Your body is steadying you.","Notice it and let it be. The panic is easing."],
-    ver:["Out through your mouth. The load is lighter.","Let the breath go. Your heart is settling.","Let it go. The wave is fading.","Breathe out. Soften.","Release it. Notice the ease.","Let it go. The tension is leaving.","The panic is dispersing. You can stay.","Tension is flowing out. Your body is lighter.","Soften. Each breath settles you.","Out slowly. You are in charge.","Let it go. Let it go. The worry is easing.","The tension is leaving. You are safe.","Let the breath go. The panic is shrinking."]
+    al:["In through the nose. Your body is looking after you.","A slow breath in. You are safe.","Let the air come in. The body can settle.","A deeper breath. The mind can quiet.","Draw it in. Nothing is required of you.","Bring your attention to the breath. You are safe here.","The body is sounding an alarm. You can stay with it.","Breathe in. This will pass.","Draw it in. The panic is already smaller.","Each breath steadies you.","The body is finding its rhythm again.","You are in control. The wave is passing.","Let the air fill you. The tension can ease."],
+    tut:["You are all right.","This feeling is temporary.","You are in control. The body is steady.","Hold it gently. No strain.","Pause. Notice. Let it be.","The body is calm enough. The mind can follow.","Stay with it for a moment.","The panic is passing. You can remain.","Be still. Feel the breath.","Gather your attention. The body is steady.","Pause. You are in control.","Be patient. Waves pass.","The body is steadying you.","Notice it, and let it be. It is already easing."],
+    ver:["Out through the mouth. The weight lifts a little.","Let the breath go. The heart can settle.","Let it go. The wave is fading.","Breathe out. Soften.","Release it. Notice the ease.","Let it go. The tension is leaving.","The panic is breaking up. You can stay.","Tension is flowing out. The body is lighter.","Soften. Each breath settles you.","Out, slowly. You are in control.","Let it go. Let it go. The worry is easing.","The tension is leaving. You are safe.","Let the breath go. The panic is smaller now."]
   },
-  triggers:{crowd:"Crowds",enclosed:"Enclosed space",alone:"Being alone",body:"A body sensation",sleep:"Poor sleep",news:"News or your phone",unknown:"I don't know"},
-  ui:{table:"Log",ready:"Ready?",control:"You are in charge.",start:"You are in charge",done:"I'm settling",stop:"Stop",passed:"It passed. You stayed with it.",intensity:"Intensity. 0 is none, 10 is the strongest.",trigger:"Trigger, if any",note:"One sentence, optional",notePh:"a sentence, if you want",save:"Save",groundBack:"← Breath",counted:"I counted this",skip:"Skip",backBreath:"← Breath",track:"Anxiety log",attacks:"Attack notes",noAttack:"No attack notes yet.",weekSave:"Save this week",weekNote:"Tap to raise. Hold to lower. Today is marked. The table clears on Monday. If you do not save it, that week is gone.",disclaimer:"This is a breathing and note tool. It is not treatment. If a symptom is new, stronger, or does not settle, do not hesitate to get a medical check.",close:"Close",saved:"Saved.",see:"See",touch:"Touch",hear:"Hear",smell:"Smell",taste:"Taste",here:"You are here.",groundDone:"The wave is passing. Return to the breath whenever you want.",backToBreath:"Back to breath",symptom:"Symptom",total:"Total",none:"none",severe:"severe",thisWeek:"This week",weekStats:(n,a)=>`Last 7 days: ${n} attacks. Average intensity ${a}/10.`,noWeek:"No attack notes in the last 7 days.",del:"Delete",
-    phases:["Breathe in through your nose","Hold","Out slowly through your mouth"],
-    ends:["Settling…","It passed, as it does…","It passed without harm…"],
+  triggers:{crowd:"A crowd",enclosed:"An enclosed space",alone:"Being alone",body:"A body sensation",sleep:"Poor sleep",news:"News, or the phone",unknown:"Not sure"},
+  ui:{table:"Log",ready:"Ready when you are.",control:"You are in control.",start:"Begin",done:"I feel better",stop:"Stop",passed:"It passed. You got through it.",intensity:"How strong was it? 0 is none, 10 is the strongest.",trigger:"What set it off, if you know",note:"A note, if you want",notePh:"one sentence is enough",save:"Save",groundBack:"← Breath",counted:"Counted",skip:"Skip",backBreath:"← Breath",track:"Your log",attacks:"Recent attacks",noAttack:"No attacks noted yet.",weekSave:"Save this week",weekNote:"Tap to raise the score. Hold to lower it. Today is marked. The table clears each Monday. Save it if you want to keep the week.",disclaimer:"This is a breathing and note tool. It is not treatment. If a symptom is new to you, stronger than usual, or does not settle, a medical check is a reasonable next step.",close:"Close",saved:"Saved.",here:"You are here.",groundDone:"The wave is passing. Return to the breath whenever you like.",backToBreath:"Back to the breath",symptom:"Sensation",total:"Total",none:"none",severe:"severe",thisWeek:"This week",weekStats:(n,a)=>`Last 7 days: ${n} ${n===1?"attack":"attacks"}. Average intensity ${a}/10.`,noWeek:"No attacks in the last 7 days.",del:"Delete",
+    phases:["Breathe in through the nose","Hold","Out slowly through the mouth"],
+    ends:["Settling.","It passed, as it does.","It passed, and it did no harm."],
     ground:[
-      {n:5,title:"See",hint:"Five things you can see. A wall, your phone, the light. Counting is enough."},
-      {n:4,title:"Touch",hint:"Four things you can touch. The table, fabric, your phone, your own hand."},
-      {n:3,title:"Hear",hint:"Three sounds. The fan, outside, your own breath. Silence counts as breath."},
-      {n:2,title:"Smell",hint:"Two things you can smell. If there are none, two breaths in through your nose are enough."},
-      {n:1,title:"Taste",hint:"The taste in your mouth. Water, toothpaste, or nothing. Nothing is an answer."}
+      {n:5,title:"See",hint:"Five things you can see. A wall, the phone, the light. Naming them is enough."},
+      {n:4,title:"Touch",hint:"Four things you can touch. The table, fabric, the phone, your own hand."},
+      {n:3,title:"Hear",hint:"Three sounds. A fan, the street, your own breath. Silence counts."},
+      {n:2,title:"Smell",hint:"Two things you can smell. If there are none, two slow breaths in are enough."},
+      {n:1,title:"Taste",hint:"Whatever is in the mouth. Water, toothpaste, or nothing at all. Nothing is a fair answer."}
     ],
     advice:[
-      "Very few anxiety sensations. A short walk indoors is enough. Keep the breathing.",
-      "A few sensations showed up. Keep the breathing and stay with quiet activity.",
-      "Mild physical anxiety. A short indoor walk helps. Slow breathing and noticing are enough.",
-      "Moderate anxiety. Listen to your body. Breathing and light movement help. This is a common response, and it passes.",
+      "Very few sensations today. A short walk indoors is plenty. Keep the breathing if it helps.",
+      "A few sensations showed up. Stay with the breathing, and keep the rest of the day quiet.",
+      "Mild physical anxiety. A short walk indoors helps. Slow breathing and simple noticing are enough.",
+      "Moderate anxiety. Listen to the body. Breathing and light movement help. This is a common response, and it passes.",
       "Strong physical anxiety. Sit down. Breathe slowly. Gentle movement can help. A racing heart is a frequent part of an attack. It passes.",
-      "A heavy day. Give yourself time in a quiet place. Breathing and noticing help. This wave will pass too."
+      "A heavy day. Give yourself a quiet place and a little time. Breathing and noticing are enough. This wave will pass too."
     ]
   }
 };
