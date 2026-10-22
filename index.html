@@ -38,9 +38,9 @@
   body.inhale { --s:1; }
   body.hold { --s:1; }
   body.exhale { --s:.76; }
-  body.inhale .orb { transition:transform 4s cubic-bezier(.16,.84,.32,1); }
+  body.inhale .orb { transition:transform 4s cubic-bezier(.4,0,.2,1); }
   body.hold .orb { transition:none; }
-  body.exhale .orb { transition:transform 8s cubic-bezier(.45,.05,.55,1); }
+  body.exhale .orb { transition:transform 8s cubic-bezier(.4,0,.2,1); }
   .app > section { animation:rise .35s ease; }
   @keyframes rise { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
   .phase { text-align:center; margin:6px 0 18px; min-height:108px; }
@@ -265,9 +265,16 @@ function renderAttacks(){
   const weekAgo = Date.now() - 7*24*60*60*1000;
   const week = state.attacks.filter(a => a.t >= weekAgo);
   const avg = week.length ? Math.round(week.reduce((s,a)=>s+a.intensity,0) / week.length) : 0;
-  document.getElementById("attackStats").textContent = week.length
+  const counts = {};
+  week.forEach(a => { if (a.trigger) counts[a.trigger] = (counts[a.trigger]||0)+1; });
+  const top = Object.entries(counts).sort((a,b)=>b[1]-a[1])[0];
+  const base = week.length
     ? (lang==="en" ? EN.ui.weekStats(week.length, avg) : `Son 7 gün: ${week.length} atak. Ortalama yoğunluk ${avg}/10.`)
     : (lang==="en" ? EN.ui.noWeek : "Son 7 günde atak kaydı yok.");
+  const extra = top
+    ? (lang==="en" ? ` Most often: ${triggerName(top[0])}.` : ` En sık tetikleyici: ${triggerName(top[0])}.`)
+    : "";
+  document.getElementById("attackStats").textContent = base + extra;
   document.getElementById("attackLog").innerHTML = list.map(a => {
     const d = new Date(a.t);
     const when = d.toLocaleDateString(lang==="en"?"en-GB":"tr-TR", { day:"numeric", month:"short" });
