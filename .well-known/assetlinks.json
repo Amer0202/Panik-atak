@@ -1,0 +1,10 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "io.github.amer0202.panic",
+    "sha256_cert_fingerprints": [
+      "1F:D2:58:EB:9E:C1:D2:02:F7:5D:C2:17:06:71:C1:47:4A:A7:86:50:65:1A:52:8D:D6:2D:F2:BF:70:16:49:B4"
+    ]
+  }
+}]
