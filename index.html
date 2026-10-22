@@ -210,7 +210,11 @@ const EN = {
     ]
   }
 };
-let lang = localStorage.getItem("kaygi-lang") || "tr";
+let lang = (()=>{
+  const saved = localStorage.getItem("kaygi-lang");
+  if (saved === "tr" || saved === "en") return saved;
+  return (navigator.language || "tr").toLowerCase().startsWith("tr") ? "tr" : "en";
+})();
 function symptoms(){ return lang==="en" ? EN.symptoms : SYMPTOMS; }
 function days(){ return lang==="en" ? EN.days : DAYS; }
 function lines(){ return lang==="en" ? EN.lines : LINES; }
@@ -462,33 +466,36 @@ function halt(done){
 }
 document.getElementById("stopBtn").onclick=()=>halt(false);
 document.getElementById("doneBtn").onclick=()=>halt(true);
+function setText(id, value){ const el = document.getElementById(id); if (el) el.textContent = value; }
 function applyLang(){
   const en = lang==="en";
   document.querySelectorAll("[data-brand]").forEach(el=>el.textContent = en ? EN.brand : "Geçer");
-  document.querySelectorAll(".lang").forEach(el=>{ el.textContent = en ? "TR" : "EN"; el.classList.toggle("on", en); });
-  document.getElementById("toTable").textContent = en ? EN.ui.table : "Tablo";
-  document.getElementById("phaseLabel").textContent = en ? EN.ui.ready : "Hazır mısın?";
-  document.getElementById("phaseHint").textContent = en ? EN.ui.control : "Kontrol sende.";
-  document.getElementById("startBtn").textContent = en ? EN.ui.start : "Kontrol sende";
-  document.getElementById("doneBtn").textContent = en ? EN.ui.done : "Rahatladım";
-  document.getElementById("stopBtn").textContent = en ? EN.ui.stop : "Durdur";
-  document.querySelector("#after h2").textContent = en ? EN.ui.passed : "Geçti. Bunu başardın.";
-  document.querySelectorAll("#after label")[0].textContent = en ? EN.ui.intensity : "Yoğunluk, 0 hiç yok, 10 en sert";
-  document.querySelectorAll("#after label")[1].textContent = en ? EN.ui.trigger : "Tetikleyici, varsa";
-  document.querySelectorAll("#after label")[2].textContent = en ? EN.ui.note : "Bir cümle, isteğe bağlı";
-  document.getElementById("attackNote").placeholder = en ? EN.ui.notePh : "istersen bir cümle";
-  document.getElementById("saveAttack").textContent = en ? EN.ui.save : "Kaydet";
+  document.querySelectorAll(".lang").forEach(el=>{ el.textContent = en ? "🇹🇷 TR" : "🇬🇧 EN"; el.classList.toggle("on", en); });
+  setText("toTable", en ? EN.ui.table : "Tablo");
+  setText("phaseLabel", en ? EN.ui.ready : "Hazır mısın?");
+  setText("phaseHint", en ? EN.ui.control : "Kontrol sende.");
+  setText("startBtn", en ? EN.ui.start : "Kontrol sende");
+  setText("doneBtn", en ? EN.ui.done : "Rahatladım");
+  setText("stopBtn", en ? EN.ui.stop : "Durdur");
+  const passed = document.querySelector("#after h2"); if (passed) passed.textContent = en ? EN.ui.passed : "Geçti. Bunu başardın.";
+  const labels = document.querySelectorAll("#after label");
+  if (labels[0]) labels[0].textContent = en ? EN.ui.intensity : "Yoğunluk, 0 hiç yok, 10 en sert";
+  if (labels[1]) labels[1].textContent = en ? EN.ui.trigger : "Tetikleyici, varsa";
+  if (labels[2]) labels[2].textContent = en ? EN.ui.note : "Bir cümle, isteğe bağlı";
+  const note = document.getElementById("attackNote"); if (note) note.placeholder = en ? EN.ui.notePh : "istersen bir cümle";
+  setText("saveAttack", en ? EN.ui.save : "Kaydet");
   document.querySelectorAll("#triggers button").forEach(b=>b.textContent = triggerName(b.dataset.trigger));
-  document.getElementById("groundBack").textContent = en ? EN.ui.groundBack : "← Nefes";
-  document.getElementById("gSkip").textContent = en ? EN.ui.skip : "Geç";
-  document.getElementById("toBreath").textContent = en ? EN.ui.backBreath : "← Nefes";
-  document.getElementById("tableTitle").textContent = en ? EN.ui.track : "Kaygı takibi";
-  document.querySelector("#table h2").textContent = en ? EN.ui.attacks : "Atak kayıtları";
-  document.getElementById("saveWeek").textContent = en ? EN.ui.weekSave : "Bu haftayı kaydet";
-  document.querySelectorAll("#table .note")[1].textContent = en ? EN.ui.weekNote : "Kısa bas, artar. Uzun bas, geri gider. Bugün işaretli. Pazartesi tablo sıfırlanır. Kaydetmezsen o hafta gider.";
-  document.querySelectorAll("#table .note")[2].textContent = en ? EN.ui.disclaimer : "Bu bir nefes ve not aracıdır, tedavi yerine geçmez. Daha önce yaşamadığın, daha şiddetli veya geçmeyen bir belirti olursa bir sağlık değerlendirmesi almaktan çekinme.";
-  document.getElementById("modalClose").textContent = en ? EN.ui.close : "Kapat";
-  document.getElementById("toast").textContent = en ? EN.ui.saved : "Kaydedildi.";
+  setText("groundBack", en ? EN.ui.groundBack : "← Nefes");
+  setText("gSkip", en ? EN.ui.skip : "Geç");
+  setText("toBreath", en ? EN.ui.backBreath : "← Nefes");
+  setText("tableTitle", en ? EN.ui.track : "Kaygı takibi");
+  const attacks = document.querySelector("#table h2"); if (attacks) attacks.textContent = en ? EN.ui.attacks : "Atak kayıtları";
+  setText("saveWeek", en ? EN.ui.weekSave : "Bu haftayı kaydet");
+  const notes = document.querySelectorAll("#table .note");
+  if (notes[1]) notes[1].textContent = en ? EN.ui.weekNote : "Kısa bas, artar. Uzun bas, geri gider. Bugün işaretli. Pazartesi tablo sıfırlanır. Kaydetmezsen o hafta gider.";
+  if (notes[2]) notes[2].textContent = en ? EN.ui.disclaimer : "Bu bir nefes ve not aracıdır, tedavi yerine geçmez. Daha önce yaşamadığın, daha şiddetli veya geçmeyen bir belirti olursa bir sağlık değerlendirmesi almaktan çekinme.";
+  setText("modalClose", en ? EN.ui.close : "Kapat");
+  setText("toast", en ? EN.ui.saved : "Kaydedildi.");
   document.title = en ? EN.brand : "Geçer";
   renderAttacks();
   renderGrid();
