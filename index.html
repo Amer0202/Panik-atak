@@ -156,9 +156,10 @@
         <ul class="log" id="attackLog"></ul>
       </div>
       <div class="card">
-        <p class="legend">0 hiç · 1 az · 2 orta · 3 belirgin · 4 şiddetli</p>
+        <p class="legend" id="weekLabel">Bu hafta</p>
         <div class="wrap"><table id="grid"></table></div>
-        <p class="note">Kısa bas, artar. Uzun bas, geri gider. Bugün işaretli. Gün toplamına basınca tavsiye açılır.</p>
+        <p class="note">Kısa bas, artar. Uzun bas, geri gider. Bugün işaretli. Pazartesi yeni hafta açılır.</p>
+        <div id="pastWeeks"></div>
       </div>
       <p class="note">Bu bir nefes ve not aracıdır, tedavi yerine geçmez. Daha önce yaşamadığın, daha şiddetli veya geçmeyen bir belirti olursa bir sağlık değerlendirmesi almaktan çekinme.</p>
     </section>
@@ -180,6 +181,24 @@ if (!state.grid) {
   let old = null;
   try { old = JSON.parse(localStorage.getItem("puanlar")); } catch {}
   state.grid = Array.isArray(old) && old.length === 10 ? old : SYMPTOMS.map(() => Array(7).fill(0));
+}
+if (!state.weeks) state.weeks = [];
+function monday(d=new Date()){
+  const x = new Date(d); x.setHours(0,0,0,0);
+  x.setDate(x.getDate() - (x.getDay()+6)%7);
+  return x.toISOString().slice(0,10);
+}
+function weekText(iso){
+  const a = new Date(iso+"T00:00:00");
+  const b = new Date(a); b.setDate(a.getDate()+6);
+  const f = (d)=>d.toLocaleDateString("tr-TR",{day:"numeric",month:"short"});
+  return f(a)+" – "+f(b);
+}
+if (!state.weekStart) state.weekStart = monday();
+if (state.weekStart !== monday()){
+  if (state.grid.some(row=>row.some(n=>n>0))) state.weeks.push({weekStart: state.weekStart, grid: state.grid});
+  state.grid = SYMPTOMS.map(()=>Array(7).fill(0));
+  state.weekStart = monday();
 }
 if (!state.attacks) state.attacks = [];
 function persist(){ localStorage.setItem(KEY, JSON.stringify(state)); localStorage.setItem("puanlar", JSON.stringify(state.grid)); }
@@ -251,6 +270,7 @@ function color(total){
 let lastCell = "";
 function renderGrid(){
   const today = (new Date().getDay() + 6) % 7;
+  document.getElementById("weekLabel").textContent = "Bu hafta · " + weekText(state.weekStart) + " · 0 hiç, 4 şiddetli";
   const totals = DAYS.map((_,c)=>state.grid.reduce((a,row)=>a+row[c],0));
   let html = "<tr><th>Belirti</th>"+DAYS.map((d,c)=>`<th class="${c===today?"today":""}">${d}</th>`).join("")+"</tr>";
   SYMPTOMS.forEach((name,r)=>{
@@ -261,6 +281,13 @@ function renderGrid(){
   });
   html += "<tr><td>Toplam</td>"+totals.map((n,c)=>{ const [bg,fg]=color(n); return `<td class="sum ${c===today?"today":""}" data-day="${c}" style="background:${bg};color:${fg}">${n}</td>`; }).join("")+"</tr>";
   document.getElementById("grid").innerHTML = html;
+  document.getElementById("pastWeeks").innerHTML = state.weeks.slice().reverse().slice(0,4).map(w=>{
+    const totals = DAYS.map((_,c)=>w.grid.reduce((a,row)=>a+row[c],0));
+    let t = `<h2 style="margin:16px 0 8px;font-size:15px">${weekText(w.weekStart)}</h2><div class="wrap"><table><tr><th>Belirti</th>${DAYS.map(d=>`<th>${d}</th>`).join("")}</tr>`;
+    SYMPTOMS.forEach((name,r)=>{ t += `<tr><td>${name}</td>`+w.grid[r].map(n=>`<td class="n${n}">${n}</td>`).join("")+"</tr>"; });
+    t += `<tr><td>Toplam</td>${totals.map(n=>`<td>${n}</td>`).join("")}</tr></table></div>`;
+    return t;
+  }).join("");
 }
 let holdTimer = null, held = false;
 document.getElementById("grid").onpointerdown = (e)=>{
