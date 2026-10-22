@@ -6,8 +6,8 @@
 <meta name="theme-color" content="#0b1220" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<meta name="apple-mobile-web-app-title" content="Kaygı" />
-<title>Kaygı</title>
+<meta name="apple-mobile-web-app-title" content="Geçer" />
+<title>Geçer</title>
 <link rel="manifest" href="manifest.json" />
 <link rel="icon" href="icon-192.png" />
 <link rel="apple-touch-icon" href="icon-192.png" />
@@ -57,7 +57,7 @@
   textarea { width:100%; border:1px solid var(--line); background:#0b1220; color:var(--ink); border-radius:14px; padding:12px; font-size:16px; min-height:80px; }
   .wrap { overflow-x:auto; margin:0 -4px; }
   table { width:100%; border-collapse:collapse; font-size:13px; }
-  th, td { border-bottom:1px solid var(--line); padding:9px 4px; text-align:center; color:var(--ink); }
+  th, td { border-bottom:1px solid var(--line); padding:14px 6px; text-align:center; color:var(--ink); font-size:16px; }
   th { color:var(--muted); font-weight:600; font-size:12px; }
   td.hit { font-variant-numeric:tabular-nums; font-weight:650; border-radius:8px; }
   td.today, th.today { background:rgba(31,169,113,.16); }
@@ -111,7 +111,7 @@
           <span id="phaseHint">Kontrol sende.</span>
           <div class="count" id="count"></div>
         </div>
-      <button class="go" id="startBtn" type="button">Kontrol sende</button>
+      <button class="go" id="startBtn" type="button">Başla</button>
       <div class="row hidden" id="liveRow">
         <button class="go" id="doneBtn" type="button">Rahatladım</button>
         <button class="soft" id="stopBtn" type="button">Durdur</button>
@@ -172,7 +172,7 @@
     </section>
   </div>
   <div class="modal hidden" id="modal"><div class="sheet"><p id="modalText"></p><button class="go" id="modalClose" type="button">Kapat</button></div></div>
-  <div class="toast hidden" id="toast">Kaydedildi.</div>
+  <div class="modal hidden" id="hello"><div class="sheet"><p id="helloText">Geçer. Atak gelince aç.</p><button class="go" id="helloOk" type="button">Tamam</button></div></div>
 <script>
 const SYMPTOMS = ["Kalbin teklemesi, hızlanması veya çarpıntı","Terleme, ürperme veya kızarma","Titreme veya sarsılma","Nefes daralması, nefes almakta zorlanma","Boğulacakmış gibi hissetme","Göğüste ağrı veya daralma","Karnında kelebekler, mide bulantısı veya huzursuz mide","Baş dönmesi, sersemlik hali, denge yitimi","Kendini veya dünyayı gerçek değilmiş gibi hissetmek","Uyuşma ve karıncalanma"];
 const DAYS = ["Pzt","Sal","Çar","Per","Cum","Cmt","Paz"];
@@ -277,6 +277,10 @@ document.getElementById("attackLog").onclick = (e)=>{
   state.attacks.splice(+btn.dataset.i, 1);
   persist();
   renderAttacks();
+  const toast = document.getElementById("toast");
+  toast.textContent = lang==="en" ? "Deleted." : "Silindi.";
+  toast.classList.remove("hidden");
+  setTimeout(() => toast.classList.add("hidden"), 1200);
 };
 document.getElementById("saveAttack").onclick = ()=>{
   state.attacks.push({
@@ -475,7 +479,7 @@ function applyLang(){
   setText("toTable", en ? EN.ui.table : "Tablo");
   setText("phaseLabel", en ? EN.ui.ready : "Hazır mısın?");
   setText("phaseHint", en ? EN.ui.control : "Kontrol sende.");
-  setText("startBtn", en ? EN.ui.start : "Kontrol sende");
+  setText("startBtn", en ? EN.ui.start : "Başla");
   setText("doneBtn", en ? EN.ui.done : "Rahatladım");
   setText("stopBtn", en ? EN.ui.stop : "Durdur");
   const passed = document.querySelector("#after h2"); if (passed) passed.textContent = en ? EN.ui.passed : "Geçti. Bunu başardın.";
@@ -509,6 +513,13 @@ document.querySelectorAll(".lang").forEach(btn=>btn.onclick = ()=>{
   applyLang();
 });
 applyLang();
+if (!localStorage.getItem("kaygi-hello")){
+  const hello = document.getElementById("hello");
+  document.getElementById("helloText").textContent = lang==="en" ? "Wave. Open it when it hits." : "Geçer. Atak gelince aç.";
+  document.getElementById("helloOk").textContent = lang==="en" ? "Okay" : "Tamam";
+  hello.classList.remove("hidden");
+  document.getElementById("helloOk").onclick = ()=>{ hello.classList.add("hidden"); localStorage.setItem("kaygi-hello","1"); };
+}
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
 </body>
