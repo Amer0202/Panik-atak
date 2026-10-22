@@ -158,8 +158,8 @@
       <div class="card">
         <p class="legend" id="weekLabel">Bu hafta</p>
         <div class="wrap"><table id="grid"></table></div>
-        <p class="note">Kısa bas, artar. Uzun bas, geri gider. Bugün işaretli. Pazartesi yeni hafta açılır.</p>
-        <div id="pastWeeks"></div>
+        <button class="soft" id="saveWeek" type="button" style="margin-top:12px">Bu haftayı kaydet</button>
+        <p class="note">Kısa bas, artar. Uzun bas, geri gider. Bugün işaretli. Pazartesi tablo sıfırlanır. Kaydetmezsen o hafta gider.</p>
       </div>
       <p class="note">Bu bir nefes ve not aracıdır, tedavi yerine geçmez. Daha önce yaşamadığın, daha şiddetli veya geçmeyen bir belirti olursa bir sağlık değerlendirmesi almaktan çekinme.</p>
     </section>
@@ -196,7 +196,6 @@ function weekText(iso){
 }
 if (!state.weekStart) state.weekStart = monday();
 if (state.weekStart !== monday()){
-  if (state.grid.some(row=>row.some(n=>n>0))) state.weeks.push({weekStart: state.weekStart, grid: state.grid});
   state.grid = SYMPTOMS.map(()=>Array(7).fill(0));
   state.weekStart = monday();
 }
@@ -281,14 +280,24 @@ function renderGrid(){
   });
   html += "<tr><td>Toplam</td>"+totals.map((n,c)=>{ const [bg,fg]=color(n); return `<td class="sum ${c===today?"today":""}" data-day="${c}" style="background:${bg};color:${fg}">${n}</td>`; }).join("")+"</tr>";
   document.getElementById("grid").innerHTML = html;
-  document.getElementById("pastWeeks").innerHTML = state.weeks.slice().reverse().slice(0,4).map(w=>{
-    const totals = DAYS.map((_,c)=>w.grid.reduce((a,row)=>a+row[c],0));
-    let t = `<h2 style="margin:16px 0 8px;font-size:15px">${weekText(w.weekStart)}</h2><div class="wrap"><table><tr><th>Belirti</th>${DAYS.map(d=>`<th>${d}</th>`).join("")}</tr>`;
-    SYMPTOMS.forEach((name,r)=>{ t += `<tr><td>${name}</td>`+w.grid[r].map(n=>`<td class="n${n}">${n}</td>`).join("")+"</tr>"; });
-    t += `<tr><td>Toplam</td>${totals.map(n=>`<td>${n}</td>`).join("")}</tr></table></div>`;
-    return t;
-  }).join("");
 }
+document.getElementById("saveWeek").onclick = async ()=>{
+  const totals = DAYS.map((_,c)=>state.grid.reduce((a,row)=>a+row[c],0));
+  const lines = ["Belirti,"+DAYS.join(",")];
+  SYMPTOMS.forEach((name,r)=>lines.push('"'+name+'",'+state.grid[r].join(",")));
+  lines.push("Toplam,"+totals.join(","));
+  const text = lines.join("\n");
+  const file = new File([text], "kaygi-"+state.weekStart+".csv", {type:"text/csv"});
+  try {
+    if (navigator.share && navigator.canShare && navigator.canShare({files:[file]})) await navigator.share({files:[file], title:"Kaygı tablosu"});
+    else throw 0;
+  } catch {
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([text],{type:"text/csv"}));
+    a.download = file.name;
+    a.click();
+  }
+};
 let holdTimer = null, held = false;
 document.getElementById("grid").onpointerdown = (e)=>{
   const cell = e.target.closest("[data-r]");
