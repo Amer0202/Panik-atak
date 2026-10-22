@@ -83,7 +83,8 @@
   .modal { position:fixed; inset:0; background:rgba(5,10,18,.7); display:grid; place-items:end center; padding:16px; z-index:5; }
   .sheet { width:min(440px,100%); background:#162033; border:1px solid var(--line); border-radius:22px; padding:18px; }
   .sheet p { line-height:1.5; margin:0 0 14px; font-size:16px; }
-  .hidden { display:none !important; }
+  .lang { border:1px solid var(--line); background:transparent; color:var(--muted); border-radius:999px; padding:4px 8px; font-size:12px; font-weight:700; }
+  .lang.on { color:var(--ink); border-color:var(--green); }
   .toast {
     position:fixed; left:50%; bottom:28px; transform:translateX(-50%);
     background:#1fa971; color:#042216; font-weight:700;
@@ -95,8 +96,11 @@
   <div class="app">
     <section id="breath">
       <header>
-        <span class="brand">Kaygı</span>
-        <button class="link" id="toTable" type="button">Tablo</button>
+        <span class="brand" data-brand>Kaygı</span>
+        <span>
+          <button class="lang" id="langBtn" type="button">EN</button>
+          <button class="link" id="toTable" type="button">Tablo</button>
+        </span>
       </header>
       <div class="stage">
         <div class="ring"><div class="orb"></div></div>
@@ -118,13 +122,13 @@
         <div class="scale"><span>0</span><span id="intensityVal">5</span><span>10</span></div>
         <label>Tetikleyici, varsa</label>
         <div class="chips" id="triggers">
-          <button type="button" data-trigger="Kalabalık">Kalabalık</button>
-          <button type="button" data-trigger="Kapalı alan">Kapalı alan</button>
-          <button type="button" data-trigger="Yalnız kalmak">Yalnız kalmak</button>
-          <button type="button" data-trigger="Beden hissi">Beden hissi</button>
-          <button type="button" data-trigger="Uykusuzluk">Uykusuzluk</button>
-          <button type="button" data-trigger="Haber veya telefon">Haber veya telefon</button>
-          <button type="button" data-trigger="Bilmiyorum">Bilmiyorum</button>
+          <button type="button" data-trigger="crowd">Kalabalık</button>
+          <button type="button" data-trigger="enclosed">Kapalı alan</button>
+          <button type="button" data-trigger="alone">Yalnız kalmak</button>
+          <button type="button" data-trigger="body">Beden hissi</button>
+          <button type="button" data-trigger="sleep">Uykusuzluk</button>
+          <button type="button" data-trigger="news">Haber veya telefon</button>
+          <button type="button" data-trigger="unknown">Bilmiyorum</button>
         </div>
         <label>Bir cümle, isteğe bağlı</label>
         <textarea id="attackNote" placeholder="istersen bir cümle"></textarea>
@@ -135,7 +139,8 @@
     <section id="ground" class="hidden">
       <header>
         <button class="link" id="groundBack" type="button">← Nefes</button>
-        <span class="brand">Kaygı</span>
+        <span class="brand" data-brand>Kaygı</span>
+        <button class="lang" type="button" data-lang>EN</button>
       </header>
       <div class="steps" id="stepDots"></div>
       <div class="big" id="gNum">5</div>
@@ -147,9 +152,10 @@
     <section id="table" class="hidden">
       <header>
         <button class="link" id="toBreath" type="button">← Nefes</button>
-        <span class="brand">Kaygı</span>
+        <span class="brand" data-brand>Kaygı</span>
+        <button class="lang" type="button" data-lang>EN</button>
       </header>
-      <h1>Kaygı takibi</h1>
+      <h1 id="tableTitle">Kaygı takibi</h1>
       <div class="card">
         <h2>Atak kayıtları</h2>
         <p class="note" id="attackStats" style="margin-top:0">Henüz atak kaydı yok.</p>
@@ -167,20 +173,54 @@
   <div class="modal hidden" id="modal"><div class="sheet"><p id="modalText"></p><button class="go" id="modalClose" type="button">Kapat</button></div></div>
   <div class="toast hidden" id="toast">Kaydedildi.</div>
 <script>
-const SYMPTOMS = ["Kalbin teklemesi, hızlanması veya çarpıntı","Terleme, ürperme veya kızarma","Titreşim veya sarsılma","Nefes daralması, nefes almakta zorlanma","Boğulacakmış gibi hissetme","Göğüste ağrı veya daralma","Karnında kelebekler, mide bulantısı veya huzursuz mide","Baş dönmesi, sersemlik hali, denge yitimi","Kendini veya dünyayı gerçek değilmiş gibi hissetmek","Uyuşma ve karıncalanma"];
+const SYMPTOMS = ["Kalbin teklemesi, hızlanması veya çarpıntı","Terleme, ürperme veya kızarma","Titreme veya sarsılma","Nefes daralması, nefes almakta zorlanma","Boğulacakmış gibi hissetme","Göğüste ağrı veya daralma","Karnında kelebekler, mide bulantısı veya huzursuz mide","Baş dönmesi, sersemlik hali, denge yitimi","Kendini veya dünyayı gerçek değilmiş gibi hissetmek","Uyuşma ve karıncalanma"];
 const DAYS = ["Pzt","Sal","Çar","Per","Cum","Cmt","Paz"];
 const LINES = {
   al:["Burnundan al… vücudun seni koruyor.","Yavaşça nefes al… güvendesin.","Hava içeri giriyor, bedenin rahatlıyor.","Derin nefes… zihnin sakinleşiyor.","İçeri çek, her şey yolunda.","Dikkatini nefesine ver, güven içindesin.","Bedenin uyarıyor, sen kontrolündesin.","Nefes al… her şey geçici.","İçeri çek, panik küçülüyor.","Her nefes seni güçlendiriyor.","Vücudun ritmini buluyor, sen de sakinleşiyorsun.","Kontrol sende, panik dalgası geçiyor.","Hava doluyor, stres azalıyor."],
   tut:["Her şey yolunda.","Bu his geçici.","Kontrol sende, beden dengede.","Nefesini tut… sabırlı ol.","Dur, hisset ve sakinleş.","Bedenin rahat, zihin huzurlu.","Bir an dur… hislerini izle.","Panik geçiyor, sen güçlüsün.","Sakin ol… nefesini hisset.","Dikkatini topla, beden dengede.","Durakla… kontrol sende.","Sabırlı ol… dalgalar geçici.","Bedenin sana güven veriyor.","Hisset ve kabul et, panik azalıyor."],
   ver:["Ağzından ver… yük azalıyor.","Nefesi bırak… kalbin sakinleşiyor.","Bırak gitsin… dalga sönüyor.","Nefes ver… gevşe ve rahatla.","Dışarı bırak, huzuru hisset.","Bırak gitsin… tüm stres uzaklaşıyor.","Panik dağılıyor, sen güçlüsün.","Stres akıyor, beden hafifliyor.","Rahatla… her nefesle sakinleş.","Yavaşça ver… kontrol sende.","Bırak, bırak… kaygı azalıyor.","Stres uzaklaşıyor, sen güven içindesin.","Nefesini bırak, panik küçülüyor."]
 };
+const EN = {
+  brand:"Wave",
+  symptoms:["Palpitations, pounding, or a racing heart","Sweating, chills, or flushing","Trembling or shaking","Shortness of breath, trouble getting air","A feeling of choking","Chest pain or tightness","Butterflies, nausea, or an unsettled stomach","Dizziness, light-headedness, or unsteadiness","Feeling detached from yourself, or that the world is unreal","Numbness or tingling"],
+  days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
+  lines:{
+    al:["In through your nose. Your body is protecting you.","Breathe in slowly. You are safe.","Air is coming in. Your body is settling.","A deep breath. Your mind is quieting.","Draw it in. Things are all right.","Put your attention on the breath. You are safe.","Your body is alerting you. You are in charge.","Breathe in. This is temporary.","Draw it in. The panic is shrinking.","Each breath steadies you.","Your body is finding its rhythm. So are you.","You are in charge. The wave is passing.","Air is filling you. The tension is easing."],
+    tut:["Things are all right.","This feeling is temporary.","You are in charge. Your body is steady.","Hold the breath. No strain.","Pause. Notice. Settle.","Your body is calm. Your mind can follow.","Stay for a moment. Watch the feeling.","The panic is passing. You can stay with it.","Be still. Feel the breath.","Gather your attention. Your body is steady.","Pause. You are in charge.","Be patient. Waves pass.","Your body is steadying you.","Notice it and let it be. The panic is easing."],
+    ver:["Out through your mouth. The load is lighter.","Let the breath go. Your heart is settling.","Let it go. The wave is fading.","Breathe out. Soften.","Release it. Notice the ease.","Let it go. The tension is leaving.","The panic is dispersing. You can stay.","Tension is flowing out. Your body is lighter.","Soften. Each breath settles you.","Out slowly. You are in charge.","Let it go. Let it go. The worry is easing.","The tension is leaving. You are safe.","Let the breath go. The panic is shrinking."]
+  },
+  triggers:{crowd:"Crowds",enclosed:"Enclosed space",alone:"Being alone",body:"A body sensation",sleep:"Poor sleep",news:"News or your phone",unknown:"I don't know"},
+  ui:{table:"Log",ready:"Ready?",control:"You are in charge.",start:"You are in charge",done:"I'm settling",stop:"Stop",passed:"It passed. You stayed with it.",intensity:"Intensity. 0 is none, 10 is the strongest.",trigger:"Trigger, if any",note:"One sentence, optional",notePh:"a sentence, if you want",save:"Save",groundBack:"← Breath",counted:"I counted this",skip:"Skip",backBreath:"← Breath",track:"Anxiety log",attacks:"Attack notes",noAttack:"No attack notes yet.",weekSave:"Save this week",weekNote:"Tap to raise. Hold to lower. Today is marked. The table clears on Monday. If you do not save it, that week is gone.",disclaimer:"This is a breathing and note tool. It is not treatment. If a symptom is new, stronger, or does not settle, do not hesitate to get a medical check.",close:"Close",saved:"Saved.",see:"See",touch:"Touch",hear:"Hear",smell:"Smell",taste:"Taste",here:"You are here.",groundDone:"The wave is passing. Return to the breath whenever you want.",backToBreath:"Back to breath",symptom:"Symptom",total:"Total",none:"none",severe:"severe",thisWeek:"This week",weekStats:(n,a)=>`Last 7 days: ${n} attacks. Average intensity ${a}/10.`,noWeek:"No attack notes in the last 7 days.",del:"Delete",
+    phases:["Breathe in through your nose","Hold","Out slowly through your mouth"],
+    ends:["Settling…","It passed, as it does…","It passed without harm…"],
+    ground:[
+      {n:5,title:"See",hint:"Five things you can see. A wall, your phone, the light. Counting is enough."},
+      {n:4,title:"Touch",hint:"Four things you can touch. The table, fabric, your phone, your own hand."},
+      {n:3,title:"Hear",hint:"Three sounds. The fan, outside, your own breath. Silence counts as breath."},
+      {n:2,title:"Smell",hint:"Two things you can smell. If there are none, two breaths in through your nose are enough."},
+      {n:1,title:"Taste",hint:"The taste in your mouth. Water, toothpaste, or nothing. Nothing is an answer."}
+    ],
+    advice:[
+      "Very few anxiety sensations. A short walk indoors is enough. Keep the breathing.",
+      "A few sensations showed up. Keep the breathing and stay with quiet activity.",
+      "Mild physical anxiety. A short indoor walk helps. Slow breathing and noticing are enough.",
+      "Moderate anxiety. Listen to your body. Breathing and light movement help. This is a common response, and it passes.",
+      "Strong physical anxiety. Sit down. Breathe slowly. Gentle movement can help. A racing heart is a frequent part of an attack. It passes.",
+      "A heavy day. Give yourself time in a quiet place. Breathing and noticing help. This wave will pass too."
+    ]
+  }
+};
+let lang = localStorage.getItem("kaygi-lang") || "tr";
+function symptoms(){ return lang==="en" ? EN.symptoms : SYMPTOMS; }
+function days(){ return lang==="en" ? EN.days : DAYS; }
+function lines(){ return lang==="en" ? EN.lines : LINES; }
 const KEY = "kaygi-v5";
 let state = {};
 try { state = JSON.parse(localStorage.getItem(KEY)) || {}; } catch { state = {}; }
 if (!state.grid) {
   let old = null;
   try { old = JSON.parse(localStorage.getItem("puanlar")); } catch {}
-  state.grid = Array.isArray(old) && old.length === 10 ? old : SYMPTOMS.map(() => Array(7).fill(0));
+  state.grid = Array.isArray(old) && old.length === 10 ? old : symptoms().map(() => Array(7).fill(0));
 }
 if (!state.weeks) state.weeks = [];
 function monday(d=new Date()){
@@ -191,17 +231,19 @@ function monday(d=new Date()){
 function weekText(iso){
   const a = new Date(iso+"T00:00:00");
   const b = new Date(a); b.setDate(a.getDate()+6);
-  const f = (d)=>d.toLocaleDateString("tr-TR",{day:"numeric",month:"short"});
+  const f = (d)=>d.toLocaleDateString(lang==="en"?"en-GB":"tr-TR",{day:"numeric",month:"short"});
   return f(a)+" – "+f(b);
 }
 if (!state.weekStart) state.weekStart = monday();
 if (state.weekStart !== monday()){
-  state.grid = SYMPTOMS.map(()=>Array(7).fill(0));
+  state.grid = symptoms().map(()=>Array(7).fill(0));
   state.weekStart = monday();
 }
 if (!state.attacks) state.attacks = [];
 function persist(){ localStorage.setItem(KEY, JSON.stringify(state)); localStorage.setItem("puanlar", JSON.stringify(state.grid)); }
-const TRIGGERS = ["Kalabalık","Kapalı alan","Yalnız kalmak","Beden hissi","Uykusuzluk","Haber veya telefon","Bilmiyorum"];
+const TRIGGERS = ["crowd","enclosed","alone","body","sleep","news","unknown"];
+const TR_TRIGGERS = {crowd:"Kalabalık",enclosed:"Kapalı alan",alone:"Yalnız kalmak",body:"Beden hissi",sleep:"Uykusuzluk",news:"Haber veya telefon",unknown:"Bilmiyorum"};
+function triggerName(key){ return (lang==="en"?EN.triggers:TR_TRIGGERS)[key] || key; }
 let pickedTrigger = "";
 document.getElementById("intensity").oninput = (e)=>{ document.getElementById("intensityVal").textContent = e.target.value; };
 document.getElementById("triggers").onclick = (e)=>{
@@ -216,12 +258,12 @@ function renderAttacks(){
   const week = state.attacks.filter(a => a.t >= weekAgo);
   const avg = week.length ? Math.round(week.reduce((s,a)=>s+a.intensity,0) / week.length) : 0;
   document.getElementById("attackStats").textContent = week.length
-    ? `Son 7 gün: ${week.length} atak. Ortalama yoğunluk ${avg}/10.`
-    : "Son 7 günde atak kaydı yok.";
+    ? (lang==="en" ? EN.ui.weekStats(week.length, avg) : `Son 7 gün: ${week.length} atak. Ortalama yoğunluk ${avg}/10.`)
+    : (lang==="en" ? EN.ui.noWeek : "Son 7 günde atak kaydı yok.");
   document.getElementById("attackLog").innerHTML = list.map(a => {
     const d = new Date(a.t);
-    const when = d.toLocaleDateString("tr-TR", { day:"numeric", month:"short" });
-    return `<li><span>${when} · ${a.intensity}/10${a.trigger ? " · " + a.trigger : ""}${a.note ? "<br>" + a.note : ""}</span><button class="del" type="button" data-i="${a.i}">Sil</button></li>`;
+    const when = d.toLocaleDateString(lang==="en"?"en-GB":"tr-TR", { day:"numeric", month:"short" });
+    return `<li><span>${when} · ${a.intensity}/10${a.trigger ? " · " + triggerName(a.trigger) : ""}${a.note ? "<br>" + a.note : ""}</span><button class="del" type="button" data-i="${a.i}">${lang==="en"?EN.ui.del:"Sil"}</button></li>`;
   }).join("");
 }
 document.getElementById("attackLog").onclick = (e)=>{
@@ -251,12 +293,21 @@ document.getElementById("saveAttack").onclick = ()=>{
 };
 renderAttacks();
 function advice(total){
-  if (total<=2) return "Harika! Çok az kaygı belirtisi. Ev içinde kısa yürüyüş yapabilirsin, nefes egzersizine devam et.";
-  if (total<=6) return "Birkaç kaygı belirtisi gözlemledin. Nefes egzersizine devam et ve sakin aktiviteler yap.";
-  if (total<=10) return "Hafif düzeyde fiziksel kaygı var. Ev içinde kısa yürüyüş iyi gelir. Derin nefes ve farkındalık egzersizleri yap.";
-  if (total<=20) return "Orta düzeyde kaygı. Bedenini dinle, nefes egzersizleri ve hafif ev içi egzersizler yap. Kaygı normal, panik geçici.";
-  if (total<=30) return "Şiddetli fiziksel kaygı. Yavaşça otur, derin nefes al-ver yap. Ev içi hareketlerle rahatlamayı dene. Her şey geçici. Kalbin hızlı atıyor, bu atakta sık görülen bir tepki.";
-  return "Yoğun bir gün. Kendine zaman ayır, sakin bir ortamda dinlen. Nefes ve farkındalık egzersizleri yap. Bu dalga da geçecek.";
+  const tr = [
+    "Harika! Çok az kaygı belirtisi. Ev içinde kısa yürüyüş yapabilirsin, nefes egzersizine devam et.",
+    "Birkaç kaygı belirtisi gözlemledin. Nefes egzersizine devam et ve sakin aktiviteler yap.",
+    "Hafif düzeyde fiziksel kaygı var. Ev içinde kısa yürüyüş iyi gelir. Derin nefes ve farkındalık egzersizleri yap.",
+    "Orta düzeyde kaygı. Bedenini dinle, nefes egzersizleri ve hafif ev içi egzersizler yap. Kaygı normal, panik geçici.",
+    "Şiddetli fiziksel kaygı. Yavaşça otur, derin nefes al-ver yap. Ev içi hareketlerle rahatlamayı dene. Her şey geçici. Kalbin hızlı atıyor, bu atakta sık görülen bir tepki.",
+    "Yoğun bir gün. Kendine zaman ayır, sakin bir ortamda dinlen. Nefes ve farkındalık egzersizleri yap. Bu dalga da geçecek."
+  ];
+  const list = lang==="en" ? EN.ui.advice : tr;
+  if (total<=2) return list[0];
+  if (total<=6) return list[1];
+  if (total<=10) return list[2];
+  if (total<=20) return list[3];
+  if (total<=30) return list[4];
+  return list[5];
 }
 function color(total){
   if (total<=2) return ["#1fa971","#042216"];
@@ -269,24 +320,25 @@ function color(total){
 let lastCell = "";
 function renderGrid(){
   const today = (new Date().getDay() + 6) % 7;
-  document.getElementById("weekLabel").textContent = "Bu hafta · " + weekText(state.weekStart) + " · 0 hiç, 4 şiddetli";
-  const totals = DAYS.map((_,c)=>state.grid.reduce((a,row)=>a+row[c],0));
-  let html = "<tr><th>Belirti</th>"+DAYS.map((d,c)=>`<th class="${c===today?"today":""}">${d}</th>`).join("")+"</tr>";
-  SYMPTOMS.forEach((name,r)=>{
+  document.getElementById("weekLabel").textContent = (lang==="en"?EN.ui.thisWeek:"Bu hafta") + " · " + weekText(state.weekStart) + " · 0 " + (lang==="en"?EN.ui.none:"hiç") + ", 4 " + (lang==="en"?EN.ui.severe:"şiddetli");
+  const d = days();
+  const totals = d.map((_,c)=>state.grid.reduce((a,row)=>a+row[c],0));
+  let html = "<tr><th>"+(lang==="en"?EN.ui.symptom:"Belirti")+"</th>"+d.map((name,c)=>`<th class="${c===today?"today":""}">${name}</th>`).join("")+"</tr>";
+  symptoms().forEach((name,r)=>{
     html += `<tr><td>${name}</td>`+state.grid[r].map((n,c)=>{
       const key = r+"-"+c;
       return `<td class="hit n${n} ${c===today?"today":""} ${key===lastCell?"pop":""}" data-r="${r}" data-c="${c}">${n}</td>`;
     }).join("")+"</tr>";
   });
-  html += "<tr><td>Toplam</td>"+totals.map((n,c)=>{ const [bg,fg]=color(n); return `<td class="sum ${c===today?"today":""}" data-day="${c}" style="background:${bg};color:${fg}">${n}</td>`; }).join("")+"</tr>";
+  html += "<tr><td>"+(lang==="en"?EN.ui.total:"Toplam")+"</td>"+totals.map((n,c)=>{ const [bg,fg]=color(n); return `<td class="sum ${c===today?"today":""}" data-day="${c}" style="background:${bg};color:${fg}">${n}</td>`; }).join("")+"</tr>";
   document.getElementById("grid").innerHTML = html;
 }
 document.getElementById("saveWeek").onclick = async ()=>{
-  const totals = DAYS.map((_,c)=>state.grid.reduce((a,row)=>a+row[c],0));
-  const lines = ["Belirti,"+DAYS.join(",")];
-  SYMPTOMS.forEach((name,r)=>lines.push('"'+name+'",'+state.grid[r].join(",")));
-  lines.push("Toplam,"+totals.join(","));
-  const text = lines.join("\n");
+  const totals = days().map((_,c)=>state.grid.reduce((a,row)=>a+row[c],0));
+  const linesOut = [(lang==="en"?EN.ui.symptom:"Belirti")+","+days().join(",")];
+  symptoms().forEach((name,r)=>linesOut.push('"'+name+'",'+state.grid[r].join(",")));
+  linesOut.push((lang==="en"?EN.ui.total:"Toplam")+","+totals.join(","));
+  const text = linesOut.join("\n");
   const file = new File([text], "kaygi-"+state.weekStart+".csv", {type:"text/csv"});
   try {
     if (navigator.share && navigator.canShare && navigator.canShare({files:[file]})) await navigator.share({files:[file], title:"Kaygı tablosu"});
@@ -345,45 +397,48 @@ const GROUND = [
 ];
 let gStep = 0, gCount = 0, gDone = false;
 function resetGround(){ gStep = 0; gCount = 0; gDone = false; renderGround(); }
+function groundSteps(){ return lang==="en" ? EN.ui.ground : GROUND; }
 function renderGround(){
+  const steps = groundSteps();
   if (gDone){
     document.getElementById("gNum").textContent = "";
-    document.getElementById("gTitle").textContent = "Buradasın.";
-    document.getElementById("gHint").textContent = "Dalga geçiyor. İstediğin anda nefese dön.";
-    document.getElementById("gTap").textContent = "Nefese dön";
-    document.getElementById("stepDots").innerHTML = GROUND.map(()=>`<span class="on"></span>`).join("");
+    document.getElementById("gTitle").textContent = lang==="en" ? EN.ui.here : "Buradasın.";
+    document.getElementById("gHint").textContent = lang==="en" ? EN.ui.groundDone : "Dalga geçiyor. İstediğin anda nefese dön.";
+    document.getElementById("gTap").textContent = lang==="en" ? EN.ui.backToBreath : "Nefese dön";
+    document.getElementById("stepDots").innerHTML = steps.map(()=>`<span class="on"></span>`).join("");
     return;
   }
-  const step = GROUND[gStep];
+  const step = steps[gStep];
   document.getElementById("gNum").textContent = step.n - gCount;
   document.getElementById("gTitle").textContent = step.title;
   document.getElementById("gHint").textContent = step.hint;
-  document.getElementById("gTap").textContent = "Bunu saydım";
-  document.getElementById("stepDots").innerHTML = GROUND.map((_,i)=>`<span class="${i<=gStep?"on":""}"></span>`).join("");
+  document.getElementById("gTap").textContent = lang==="en" ? EN.ui.counted : "Bunu saydım";
+  document.getElementById("stepDots").innerHTML = steps.map((_,i)=>`<span class="${i<=gStep?"on":""}"></span>`).join("");
 }
 document.getElementById("gTap").onclick = ()=>{
   if (gDone){ show("breath"); return; }
-  const step = GROUND[gStep];
+  const step = groundSteps()[gStep];
   gCount++;
   if (gCount >= step.n){
     gStep++;
     gCount = 0;
-    if (gStep >= GROUND.length){ gDone = true; }
+    if (gStep >= groundSteps().length){ gDone = true; }
   }
   renderGround();
 };
 document.getElementById("gSkip").onclick = ()=>{
   if (gDone){ show("breath"); return; }
   gStep++; gCount = 0;
-  if (gStep >= GROUND.length){ gDone = true; }
+  if (gStep >= groundSteps().length){ gDone = true; }
   renderGround();
 };
 let running=false, timer=null, last={al:"",tut:"",ver:""};
-function pick(kind){ let line=last[kind]; while(line===last[kind]) line=LINES[kind][Math.floor(Math.random()*LINES[kind].length)]; last[kind]=line; return line; }
+function pick(kind){ const list=lines()[kind]; let line=last[kind]; while(line===last[kind]) line=list[Math.floor(Math.random()*list.length)]; last[kind]=line; return line; }
 function setPhase(name,hint,n,cls){ document.body.classList.remove("inhale","hold","exhale"); if(cls) document.body.classList.add(cls); document.getElementById("phaseLabel").textContent=name; document.getElementById("phaseHint").textContent=hint; document.getElementById("count").textContent=n||""; }
 function wait(ms){ return new Promise(r=>timer=setTimeout(r,ms)); }
 async function cycle(){
-  const steps=[["Burnundan nefes al","al",4,"inhale","in"],["Nefesini tut","tut",4,"hold","hold"],["Ağzından yavaşça ver","ver",8,"exhale","out"]];
+  const names = lang==="en" ? EN.ui.phases : ["Burnundan nefes al","Nefesini tut","Ağzından yavaşça ver"];
+  const steps=[[names[0],"al",4,"inhale","in"],[names[1],"tut",4,"hold","hold"],[names[2],"ver",8,"exhale","out"]];
   while(running) for (const [name,kind,sec,cls,breath] of steps){
     if(!running) return;
     const line = pick(kind);
@@ -399,15 +454,53 @@ document.getElementById("startBtn").onclick = ()=>{
 };
 function halt(done){
   running=false; clearTimeout(timer);
-  const end=["Sakinledik…","Her zamanki gibi geçti…","Zararsız bir şekilde geçti…"];
-  setPhase(done?end[Math.floor(Math.random()*end.length)]:"Hazır mısın?", done?"Geçti. Bunu başardın.":"Kontrol sende.", "", "");
+  const end = lang==="en" ? EN.ui.ends : ["Sakinledik…","Her zamanki gibi geçti…","Zararsız bir şekilde geçti…"];
+  setPhase(done?end[Math.floor(Math.random()*end.length)]:(lang==="en"?EN.ui.ready:"Hazır mısın?"), done?(lang==="en"?EN.ui.passed:"Geçti. Bunu başardın."):(lang==="en"?EN.ui.control:"Kontrol sende."), "", "");
   document.getElementById("startBtn").classList.remove("hidden");
   document.getElementById("liveRow").classList.add("hidden");
   document.getElementById("after").classList.toggle("hidden", !done);
 }
 document.getElementById("stopBtn").onclick=()=>halt(false);
 document.getElementById("doneBtn").onclick=()=>halt(true);
-renderGrid();
+function applyLang(){
+  const en = lang==="en";
+  document.querySelectorAll("[data-brand]").forEach(el=>el.textContent = en ? EN.brand : "Geçer");
+  document.querySelectorAll(".lang").forEach(el=>{ el.textContent = en ? "TR" : "EN"; el.classList.toggle("on", en); });
+  document.getElementById("toTable").textContent = en ? EN.ui.table : "Tablo";
+  document.getElementById("phaseLabel").textContent = en ? EN.ui.ready : "Hazır mısın?";
+  document.getElementById("phaseHint").textContent = en ? EN.ui.control : "Kontrol sende.";
+  document.getElementById("startBtn").textContent = en ? EN.ui.start : "Kontrol sende";
+  document.getElementById("doneBtn").textContent = en ? EN.ui.done : "Rahatladım";
+  document.getElementById("stopBtn").textContent = en ? EN.ui.stop : "Durdur";
+  document.querySelector("#after h2").textContent = en ? EN.ui.passed : "Geçti. Bunu başardın.";
+  document.querySelectorAll("#after label")[0].textContent = en ? EN.ui.intensity : "Yoğunluk, 0 hiç yok, 10 en sert";
+  document.querySelectorAll("#after label")[1].textContent = en ? EN.ui.trigger : "Tetikleyici, varsa";
+  document.querySelectorAll("#after label")[2].textContent = en ? EN.ui.note : "Bir cümle, isteğe bağlı";
+  document.getElementById("attackNote").placeholder = en ? EN.ui.notePh : "istersen bir cümle";
+  document.getElementById("saveAttack").textContent = en ? EN.ui.save : "Kaydet";
+  document.querySelectorAll("#triggers button").forEach(b=>b.textContent = triggerName(b.dataset.trigger));
+  document.getElementById("groundBack").textContent = en ? EN.ui.groundBack : "← Nefes";
+  document.getElementById("gSkip").textContent = en ? EN.ui.skip : "Geç";
+  document.getElementById("toBreath").textContent = en ? EN.ui.backBreath : "← Nefes";
+  document.getElementById("tableTitle").textContent = en ? EN.ui.track : "Kaygı takibi";
+  document.querySelector("#table h2").textContent = en ? EN.ui.attacks : "Atak kayıtları";
+  document.getElementById("saveWeek").textContent = en ? EN.ui.weekSave : "Bu haftayı kaydet";
+  document.querySelectorAll("#table .note")[1].textContent = en ? EN.ui.weekNote : "Kısa bas, artar. Uzun bas, geri gider. Bugün işaretli. Pazartesi tablo sıfırlanır. Kaydetmezsen o hafta gider.";
+  document.querySelectorAll("#table .note")[2].textContent = en ? EN.ui.disclaimer : "Bu bir nefes ve not aracıdır, tedavi yerine geçmez. Daha önce yaşamadığın, daha şiddetli veya geçmeyen bir belirti olursa bir sağlık değerlendirmesi almaktan çekinme.";
+  document.getElementById("modalClose").textContent = en ? EN.ui.close : "Kapat";
+  document.getElementById("toast").textContent = en ? EN.ui.saved : "Kaydedildi.";
+  document.title = en ? EN.brand : "Geçer";
+  renderAttacks();
+  renderGrid();
+  renderGround();
+}
+document.querySelectorAll(".lang").forEach(btn=>btn.onclick = ()=>{
+  lang = lang==="en" ? "tr" : "en";
+  localStorage.setItem("kaygi-lang", lang);
+  last = {al:"",tut:"",ver:""};
+  applyLang();
+});
+applyLang();
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
 </body>
