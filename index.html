@@ -78,7 +78,8 @@
   .chips button.on { background:var(--green); color:#042216; border-color:var(--green); }
   .scale { display:flex; justify-content:space-between; color:var(--muted); font-size:13px; margin-top:4px; }
   .log { margin:0; padding:0; list-style:none; }
-  .log li { padding:10px 0; border-bottom:1px solid var(--line); font-size:14px; line-height:1.4; }
+  .log li { display:flex; justify-content:space-between; gap:10px; align-items:flex-start; }
+  .del { border:0; background:transparent; color:#e08b7a; font-size:13px; font-weight:650; padding:0; }
   .modal { position:fixed; inset:0; background:rgba(5,10,18,.7); display:grid; place-items:end center; padding:16px; z-index:5; }
   .sheet { width:min(440px,100%); background:#162033; border:1px solid var(--line); border-radius:22px; padding:18px; }
   .sheet p { line-height:1.5; margin:0 0 14px; font-size:16px; }
@@ -192,7 +193,7 @@ document.getElementById("triggers").onclick = (e)=>{
   document.querySelectorAll("#triggers button").forEach(b => b.classList.toggle("on", b.dataset.trigger === pickedTrigger));
 };
 function renderAttacks(){
-  const list = state.attacks.slice().reverse().slice(0, 8);
+  const list = state.attacks.map((a,i)=>({...a,i})).reverse().slice(0, 8);
   const weekAgo = Date.now() - 7*24*60*60*1000;
   const week = state.attacks.filter(a => a.t >= weekAgo);
   const avg = week.length ? Math.round(week.reduce((s,a)=>s+a.intensity,0) / week.length) : 0;
@@ -202,9 +203,16 @@ function renderAttacks(){
   document.getElementById("attackLog").innerHTML = list.map(a => {
     const d = new Date(a.t);
     const when = d.toLocaleDateString("tr-TR", { day:"numeric", month:"short" });
-    return `<li>${when} · ${a.intensity}/10${a.trigger ? " · " + a.trigger : ""}${a.note ? "<br>" + a.note : ""}</li>`;
+    return `<li><span>${when} · ${a.intensity}/10${a.trigger ? " · " + a.trigger : ""}${a.note ? "<br>" + a.note : ""}</span><button class="del" type="button" data-i="${a.i}">Sil</button></li>`;
   }).join("");
 }
+document.getElementById("attackLog").onclick = (e)=>{
+  const btn = e.target.closest("[data-i]");
+  if (!btn) return;
+  state.attacks.splice(+btn.dataset.i, 1);
+  persist();
+  renderAttacks();
+};
 document.getElementById("saveAttack").onclick = ()=>{
   state.attacks.push({
     t: Date.now(),
