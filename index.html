@@ -38,15 +38,18 @@
   body.inhale { --s:1; }
   body.hold { --s:1; }
   body.exhale { --s:.76; }
-  body.inhale .orb { transition:transform 4s cubic-bezier(.22,.7,.36,1); }
+  body.inhale .orb { transition:transform 4s cubic-bezier(.16,.84,.32,1); }
   body.hold .orb { transition:none; }
-  body.exhale .orb { transition:transform 8s cubic-bezier(.4,.05,.6,1); }
+  body.exhale .orb { transition:transform 8s cubic-bezier(.45,.05,.55,1); }
+  .app > section { animation:rise .35s ease; }
+  @keyframes rise { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
   .phase { text-align:center; margin:6px 0 18px; min-height:108px; }
   .phase b { display:block; font-size:24px; font-weight:650; letter-spacing:-.02em; }
   .phase span { display:block; margin:8px auto 0; max-width:320px; color:var(--ink); font-size:16px; line-height:1.4; min-height:44px; }
   .count { margin-top:6px; font-variant-numeric:tabular-nums; font-size:32px; font-weight:650; color:var(--green); }
-  .go,.soft { width:100%; border:0; border-radius:18px; padding:17px 18px; font-size:17px; font-weight:700; }
+  .go,.soft { width:100%; border:0; border-radius:18px; padding:17px 18px; font-size:17px; font-weight:700; transition:transform .12s ease, background .12s ease; }
   .go { background:var(--green); color:#042216; }
+  .go:active, .soft:active { transform:scale(.98); }
   .go:active { background:var(--green-d); }
   .soft { background:#1a2438; color:var(--ink); border:1px solid var(--line); }
   .row { display:flex; gap:8px; margin-top:10px; } .row > * { flex:1; }
@@ -59,7 +62,7 @@
   table { width:100%; border-collapse:collapse; font-size:13px; }
   th, td { border-bottom:1px solid var(--line); padding:14px 6px; text-align:center; color:var(--ink); font-size:16px; }
   th { color:var(--muted); font-weight:600; font-size:12px; }
-  td.hit { font-variant-numeric:tabular-nums; font-weight:650; border-radius:8px; }
+  td.hit { font-variant-numeric:tabular-nums; font-weight:650; border-radius:8px; transition:color .25s ease, background .25s ease; }
   td.today, th.today { background:rgba(31,169,113,.16); }
   .n0 { color:#8ea0b8; } .n1 { color:#8fd18a; } .n2 { color:#1fa971; }
   .n3 { color:#e7b48a; } .n4 { color:#e08b7a; }
