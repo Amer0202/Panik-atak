@@ -31,7 +31,8 @@
   .ring { width:248px; height:248px; display:grid; place-items:center; }
   .orb {
     width:176px; height:176px; border-radius:50%;
-    background:#1fa971;
+    background: radial-gradient(circle at 38% 32%, #3dd68c 0%, #1fa971 42%, #0f6b48 100%);
+    box-shadow: 0 12px 32px rgba(31,169,113,.28), inset 0 2px 8px rgba(255,255,255,.18);
     transform:scale(var(--s,.76));
     transition:transform 4s cubic-bezier(.37,.05,.28,1);
   }
@@ -123,7 +124,7 @@
         <h2>Geçti. Bunu başardın.</h2>
         <label>Yoğunluk, 0 hiç yok, 10 en sert</label>
         <input id="intensity" type="range" min="0" max="10" value="5" />
-        <div class="scale"><span>0</span><span id="intensityVal">5</span><span>10</span></div>
+        <div class="scale"><span>0</span><span id="intensityVal">5</span></div>
         <label>Tetikleyici, varsa</label>
         <div class="chips" id="triggers">
           <button type="button" data-trigger="crowd">Kalabalık</button>
